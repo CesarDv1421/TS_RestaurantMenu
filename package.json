@@ -4,20 +4,12 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "npm run start:backend",
-    "start:backend": "cd backend && npm start",
-    "dev:frontend": "cd frontend && npm run dev",
-    "build:frontend": "cd frontend && npm run build",
-    "dev:backend": "cd backend && npm run dev",
-    "build:backend": "cd backend && npm run build",
-    "migrate:backend": "cd backend && npm run migrate"
+    "start": "npm install && concurrently \"cd backend && npm install && npm run migrate && npx prisma db seed && npm start\" \"cd frontend && npm install && npm run dev\""
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@mui/material": "^5.14.6",
-    "concurrently": "^8.2.1",
-    "react-router-dom": "^6.15.0"
+    "concurrently": "^8.2.1"
   }
 }
