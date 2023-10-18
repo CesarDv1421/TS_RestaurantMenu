@@ -1,8 +1,9 @@
-import { useContext, useEffect, useState, useRef } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 //Interfaces
-import { CartOrderTypes, CartOrdersContextType } from '../interfaces/CartOrder';
+import { CartOrdersContextType } from '../interfaces/CartOrder';
+import { ContextValue } from '../interfaces/AuthContext';
 
 //Componentes
 import RestaurantMenu from '../components/RestaurantMenu';
@@ -27,33 +28,38 @@ import { Grid } from '@mui/material';
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure } from '@nextui-org/react'; //Componentes necesarios para el Modal
 import { Badge, Button, Input } from '@nextui-org/react'; //Circulo de notificaciones
 
-//API URL
-const API_URL = import.meta.env.VITE_API_URL;
+//Custom Hooks
+import useMenu from '../hooks/useMenu.tsx';
 
 //CSS Modules
 import css from '../components/Menu.module.css';
 
-//Interfaces
-import { ContextValue } from '../interfaces/AuthContext';
-
 function App() {
   //Estados
-  const [restaurantMenu, setRestaurantMenu] = useState<CartOrderTypes[]>(); //Aqui se almacena el menu del restaurante
-  const copyOfRestaurantMenu = useRef<CartOrderTypes[]>([]);
-  const [categories, setCategories] = useState([]); //Aqui se almacenan las categorias de los platillos
-  const [displayedCategory, setDisplayedCategory] = useState('Menu'); //Mustra el menu de acuerdo a la categoria selecionada
   const [inputValue, setInputValue] = useState('');
 
   //Context
   //=> CartOrder / Carrito de compras
   const { cartOrders, setCartOrders } = useContext(CartOrdersContext) as CartOrdersContextType;
   //=> Token, informacion del usuario y cierre de sesion
-  const { userInfo, userToken, logout } = useContext(AuthContext) as ContextValue;
+  const { userInfo, userToken } = useContext(AuthContext) as ContextValue;
 
   //Hooks
   const navigate = useNavigate();
   //=> Custom Hooks
   const { isOpen, onOpen, onClose } = useDisclosure(); //custom Hook del Modal del NextUI
+
+  const {
+    fetchMenuRestaurant,
+    onFindingMenu,
+    onGoToCart,
+    categories,
+    displayedCategory,
+    setDisplayedCategory,
+    restaurantMenu,
+    setRestaurantMenu,
+    copyOfRestaurantMenu,
+  } = useMenu();
 
   useEffect(() => {
     if (!userToken) navigate('/auth');
@@ -74,39 +80,15 @@ function App() {
   }, []);
 
   useEffect(() => {
+    if (userToken) fetchMenuRestaurant();
+    else navigate('/auth');
+  }, []);
+
+  useEffect(() => {
     // Al cambiar el carrito, actualizar el localStorage
     const storedCart = localStorage.getItem('cartOrders');
     if (storedCart) localStorage.setItem('cartOrders', JSON.stringify(cartOrders));
   }, [cartOrders]);
-
-  useEffect(() => {
-    const fetchMenuRestaurant = async () => {
-      try {
-        const response = await fetch(`${API_URL}/menu`, {
-          headers: {
-            'Content-Type': 'application/json',
-            authorization: `Bearer ${userToken}`,
-          },
-        });
-        const { menu, categories, err } = await response.json();
-
-        if (err) {
-          logout();
-          console.log(err);
-          navigate('/auth');
-        }
-
-        if (response.status === 200) {
-          setRestaurantMenu(menu);
-          copyOfRestaurantMenu.current = menu;
-          setCategories(categories);
-        }
-      } catch (err) {
-        console.log(err);
-      }
-    };
-    if (userToken) fetchMenuRestaurant();
-  }, []);
 
   useEffect(() => {
     setRestaurantMenu(() => {
@@ -115,24 +97,6 @@ function App() {
         : copyOfRestaurantMenu.current;
     });
   }, [displayedCategory, copyOfRestaurantMenu]); //Cada vez que se seleccione una categoria
-
-  const onGoToCart = () => {
-    localStorage.setItem('cartOrders', JSON.stringify(cartOrders));
-    navigate('/cart');
-  };
-
-  const onFindingMenu = (event: React.ChangeEvent<HTMLInputElement>) => {
-    //Muestra el menu de acuerdo a lo escrito
-    const inputValue = event.target.value;
-
-    if (inputValue.length > 0) setDisplayedCategory('Menu');
-
-    const filteredFood = copyOfRestaurantMenu.current.filter((food) =>
-      food.name.toLowerCase().includes(inputValue.toLocaleLowerCase())
-    );
-    console.log(filteredFood);
-    return setRestaurantMenu(filteredFood);
-  };
 
   return (
     <div className='flex'>
