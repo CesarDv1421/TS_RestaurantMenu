@@ -1,0 +1,49 @@
+.ToggleButton {
+  width: 40px;
+  height: 40px;
+  font-size: 12px;
+  color: black;
+  border-radius: 100px; /* Hace que el botón sea un círculo perfecto */
+  background: rgba(0, 0, 0, 0.1); /* Puedes ajustar el color del fondo a tu gusto */
+  border: solid 2px gray;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.ToggleButtonSelected {
+  width: 40px;
+  height: 40px;
+  font-size: 12px;
+  color: white;
+  border-radius: 100px; /* Hace que el botón sea un círculo perfecto */
+  background: rgba(0, 0, 0, 0.5); /* Puedes ajustar el color del fondo a tu gusto */
+  border: solid 2px white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.ToggleButtonWithVariants {
+  font-size: 13px;
+  padding: 8px 10px;
+  border-radius: 100px;
+  background: rgba(0, 0, 0, 0.1);
+  border: solid 2px gray;
+  cursor: pointer;
+  transition: all 0.25s;
+}
+
+.ToggleButtonWithVariantsSelected {
+  font-size: 13px;
+  padding: 8px 10px;
+  border-radius: 100px;
+  background: red;
+  border: solid 2px black;
+  cursor: pointer;
+  transition: all 0.25s;
+}

@@ -1,0 +1,174 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model categorias {
+  id        Int    @id @default(autoincrement())
+  categoria String @db.VarChar(50)
+  menu      menu[]
+}
+
+model menu {
+  id                                 Int                                  @id @default(autoincrement())
+  nombre                             String                               @db.VarChar(50)
+  descripcion                        String                               @db.VarChar(200)
+  precio                             Decimal?                             @db.Decimal(10, 2)
+  img                                String                               @default("coffee.jpg") @db.VarChar(50)
+  id_categoria                       Int
+  categorias                         categorias                           @relation(fields: [id_categoria], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "categoria")
+  ordenes                            ordenes[]
+  ordenes_extras                     ordenes_extras[]
+  ordenes_ingredientes               ordenes_ingredientes[]
+  platos_con_extras                  platos_con_extras[]
+  platos_con_ingredientes_opcionales platos_con_ingredientes_opcionales[]
+  variantes                          variantes[]
+
+  @@index([id_categoria], map: "categoria")
+}
+
+model tipos_de_variantes {
+  id                   Int                    @id @default(autoincrement())
+  variante             String                 @db.VarChar(50)
+  ordenes_ingredientes ordenes_ingredientes[]
+  variantes            variantes[]
+}
+
+model variantes {
+  id                    Int                @id @default(autoincrement())
+  id_menu               Int
+  id_tipos_de_variantes Int
+  precio                Decimal            @default(0.00) @db.Decimal(10, 2)
+  menu                  menu               @relation(fields: [id_menu], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "menu")
+  tipos_de_variantes    tipos_de_variantes @relation(fields: [id_tipos_de_variantes], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "tipos_de_variantes")
+
+  @@index([id_menu], map: "menu")
+  @@index([id_tipos_de_variantes], map: "tipos_de_variantes")
+}
+
+model extras {
+  id                Int                 @id @default(autoincrement())
+  extra             String              @db.VarChar(50)
+  ordenes_extras    ordenes_extras[]
+  platos_con_extras platos_con_extras[]
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model ingredientes_opcionales {
+  id                                 Int                                  @id @default(autoincrement())
+  ingrediente                        String?                              @db.VarChar(50)
+  ordenes_ingredientes               ordenes_ingredientes[]
+  platos_con_ingredientes_opcionales platos_con_ingredientes_opcionales[]
+}
+
+model platos_con_extras {
+  id       Int     @id @default(autoincrement())
+  id_menu  Int
+  id_extra Int
+  price    Decimal @db.Decimal(10, 2)
+  extras   extras  @relation(fields: [id_extra], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_platos_con_extras_extras")
+  menu     menu    @relation(fields: [id_menu], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_platos_con_extras_menu")
+
+  @@index([id_extra], map: "FK_platos_con_extras_extras")
+  @@index([id_menu], map: "FK_platos_con_extras_menu")
+}
+
+model platos_con_ingredientes_opcionales {
+  id                         Int                     @id @default(autoincrement())
+  id_menu                    Int
+  id_ingredientes_opcionales Int
+  ingredientes_opcionales    ingredientes_opcionales @relation(fields: [id_ingredientes_opcionales], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_platos_con_ingredientes_opcionales_ingredientes_opcionales")
+  menu                       menu                    @relation(fields: [id_menu], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_platos_con_ingredientes_opcionales_menu")
+
+  @@index([id_ingredientes_opcionales], map: "FK_platos_con_ingredientes_opcionales_ingredientes_opcionales")
+  @@index([id_menu], map: "FK_platos_con_ingredientes_opcionales_menu")
+}
+
+model clientes {
+  id       Int       @id @default(autoincrement())
+  nombre   String    @db.VarChar(50)
+  email    String    @db.VarChar(50)
+  password String    @db.VarChar(150)
+  id_rol   Int       @default(1)
+  roles    roles     @relation(fields: [id_rol], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_clientes_roles")
+  ordenes  ordenes[]
+
+  @@index([id_rol], map: "FK_clientes_roles")
+}
+
+model roles {
+  id       Int        @id @default(autoincrement())
+  roles    String     @db.VarChar(50)
+  clientes clientes[]
+}
+
+model ordenes {
+  id                                                            Int                    @id @default(autoincrement())
+  id_orden                                                      Int
+  id_platos                                                     Int
+  cantidad                                                      Int
+  precio_total                                                  Decimal                @db.Decimal(10, 2)
+  id_cliente                                                    Int
+  fecha_creacion                                                DateTime               @db.DateTime(0)
+  clientes                                                      clientes               @relation(fields: [id_cliente], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_ordenes_clientes")
+  menu                                                          menu                   @relation(fields: [id_platos], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_ordenes_menu")
+  ordenes_extras_ordenes_extras_id_ordenesToordenes             ordenes_extras[]       @relation("ordenes_extras_id_ordenesToordenes")
+  ordenes_ingredientes_ordenes_ingredientes_id_ordenesToordenes ordenes_ingredientes[] @relation("ordenes_ingredientes_id_ordenesToordenes")
+
+  @@index([id_cliente], map: "FK_ordenes_clientes")
+  @@index([id_platos], map: "FK_ordenes_menu")
+}
+
+model ordenes_extras {
+  id                                         Int     @id @default(autoincrement())
+  id_menu                                    Int     @default(0)
+  id_ingrediente                             Int
+  precio                                     Decimal @db.Decimal(10, 2)
+  id_ordenes                                 Int
+  extras                                     extras  @relation(fields: [id_ingrediente], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_ordenes_extras_extras")
+  menu                                       menu    @relation(fields: [id_menu], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_ordenes_extras_menu")
+  ordenes_ordenes_extras_id_ordenesToordenes ordenes @relation("ordenes_extras_id_ordenesToordenes", fields: [id_ordenes], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_ordenes_extras_ordenes")
+
+  @@index([id_ordenes], map: "FK_ordenes_extras_ordenes")
+  @@index([id_ingrediente], map: "FK_ordenes_extras_extras")
+  @@index([id_menu], map: "FK_ordenes_extras_menu")
+}
+
+model ordenes_ingredientes {
+  id                                               Int                               @id @default(autoincrement())
+  id_menu                                          Int
+  id_titulo                                        Int?
+  id_opciones                                      Int?                              @default(0)
+  id_ingrediente                                   Int?                              @default(0)
+  id_variante                                      Int?
+  id_ordenes                                       Int
+  ingredientes_opcionales                          ingredientes_opcionales?          @relation(fields: [id_ingrediente], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_ordenes_ingredientes_ingredientes_opcionales")
+  menu                                             menu                              @relation(fields: [id_menu], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_ordenes_ingredientes_menu")
+  ordenes_ordenes_ingredientes_id_ordenesToordenes ordenes                           @relation("ordenes_ingredientes_id_ordenesToordenes", fields: [id_ordenes], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_ordenes_ingredientes_ordenes")
+  ordenes_ingredientes_ingrediente                 ordenes_ingredientes_ingrediente? @relation(fields: [id_opciones], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_ordenes_ingredientes_ordenes_ingredientes_ingrediente")
+  ordenes_ingredientes_titulos                     ordenes_ingredientes_titulos?     @relation(fields: [id_titulo], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_ordenes_ingredientes_ordenes_ingredientes_titulos")
+  tipos_de_variantes                               tipos_de_variantes?               @relation(fields: [id_variante], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_ordenes_ingredientes_tipos_de_variantes")
+
+  @@index([id_ordenes], map: "FK_ordenes_ingredientes_ordenes")
+  @@index([id_opciones], map: "FK_ordenes_ingredientes_ordenes_ingredientes_ingrediente")
+  @@index([id_titulo], map: "FK_ordenes_ingredientes_ordenes_ingredientes_titulos")
+  @@index([id_variante], map: "FK_ordenes_ingredientes_tipos_de_variantes")
+  @@index([id_ingrediente], map: "FK_ordenes_ingredientes_ingredientes_opcionales")
+  @@index([id_menu], map: "FK_ordenes_ingredientes_menu")
+}
+
+model ordenes_ingredientes_ingrediente {
+  id                   Int                    @id @default(autoincrement())
+  ingrediente          String                 @db.VarChar(50)
+  ordenes_ingredientes ordenes_ingredientes[]
+}
+
+model ordenes_ingredientes_titulos {
+  id                   Int                    @id @default(autoincrement())
+  titulo               String                 @db.VarChar(50)
+  ordenes_ingredientes ordenes_ingredientes[]
+}

@@ -1,0 +1,48 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: 'Outfit Medium';
+  src: url('../fonts/Outfit/static/Outfit-Medium.ttf') format('truetype'); /* Formatos de fuentes compatibles */
+}
+@font-face {
+  font-family: 'Outfit Light';
+  src: url('../fonts/Outfit/static/Outfit-Light.ttf') format('truetype'); /* Formatos de fuentes compatibles */
+}
+@font-face {
+  font-family: 'Outfit Regular';
+  src: url('../fonts/Outfit/static/Outfit-Regular.ttf') format('truetype'); /* Formatos de fuentes compatibles */
+}
+@font-face {
+  font-family: 'Outfit Bold';
+  src: url('../fonts/Outfit/static/Outfit-Bold.ttf') format('truetype'); /* Formatos de fuentes compatibles */
+}
+
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+  font-family: 'Outfit Medium', sans-serif;
+  font-weight: 500;
+  list-style: none;
+}
+
+/* styles.css */
+
+/* Personaliza el color de fondo del scroll */
+::-webkit-scrollbar {
+  background-color: transparent;
+  margin: 5px;
+}
+
+/* Personaliza el indicador del scroll (la barra) */
+::-webkit-scrollbar-thumb {
+  background-color: #888;
+  border-radius: 50px;
+}
+
+/* Personaliza el indicador del scroll en hover */
+::-webkit-scrollbar-thumb:hover {
+  background-color: #555;
+}
