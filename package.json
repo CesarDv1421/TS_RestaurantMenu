@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": " npm install -g pnpm && pnpm install && concurrently \"cd backend && pnpm install --production && npx prisma db seed && pnpm start\" \"cd frontend && pnpm install --production && npm run dev\""
+    "start": "NODE_OPTIONS=--max-old-space-size=4096 npm install && concurrently \"cd backend && NODE_OPTIONS=--max-old-space-size=4096 npm install --production && npx prisma db seed && npm start\" \"cd frontend && NODE_OPTIONS=--max-old-space-size=4096 npm install --production && npm run dev\""
   },
   "keywords": [],
   "author": "",
