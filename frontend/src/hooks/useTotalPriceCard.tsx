@@ -32,11 +32,6 @@ interface VerifyDataOfTransaction {
   message: string;
 }
 
-interface EnvironmentVariables {
-  VITE_IVA_PERCENTAGE?: number;
-  VITE_SERVICE_PERCENTAGE?: number;
-}
-
 const useTotalPriceCard = (children: number) => {
   //States
   const [selected, setSelected] = useState('binance'); //Estado necesario del Tab de NextUI que especifica el Tab del metodo de pago.
@@ -75,7 +70,7 @@ const useTotalPriceCard = (children: number) => {
   const { isOpen, onOpen, onClose } = useDisclosure(); //Custom Hook de NextUI
   const { isOpen: customIsOpen, onOpen: customOnOpen, onOpenChange, onClose: customOnClose } = useSecondDisclosure(); //Custom Hook de NextUI para usar un segundo modal y cambiando nombres para evitar errores
 
-  const env = import.meta.env as EnvironmentVariables;
+  const env = import.meta.env;
 
   const IVA_PERCENTAGE = Number(env.VITE_IVA_PERCENTAGE) || 0;
   const SERVICE_PERCENTAGE = Number(env.VITE_SERVICE_PERCENTAGE) || 0;
@@ -196,7 +191,7 @@ const useTotalPriceCard = (children: number) => {
     total,
     selected,
     binanceDataOfTransfer,
-    pmDataOfTransfer, 
+    pmDataOfTransfer,
     cardData,
   };
 };

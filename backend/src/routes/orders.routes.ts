@@ -22,23 +22,24 @@ orders.post('/', async (req: CustomRequest, res) => {
     const orders = req.body as ordersInComing[];
     const userId = req.user?.id;
 
-    console.log(userId);
-
     if (!userId) return res.status(400).json({ err: 'Autenticacion fallida, usuario no encontrado' });
 
     const lastOrder = await prisma.ordenes.findFirst({
       orderBy: { fecha_creacion: 'desc' }, // Ordena por fecha en orden descendente para obtener la última orden
     });
 
+    //Metodo para ordenar las "ordenes" por id, que son efectuadas por cada vez que se ejecute una compra exitosa. Esto hace que aún cuando hayan ordenes con multiples platos, se pueda diferenciar de una orden hecha por cada vez que se realice una compra.
     const nextOrderNumber = lastOrder ? lastOrder.id_orden + 1 : 1;
 
     orders.map(async (ordersData) => {
+      //Busca en la BD los datos del plato que estan siendo ordenados
       const namePlate = await prisma.menu.findFirst({
         where: { nombre: ordersData.name },
       });
 
-      if (!namePlate) return res.status(400).json({ err: 'Plato no encontrado, orden no creada' });
+      if (!namePlate) return res.status(400).json({ err: 'Plato no encontrado, orden no creada, intente nuevamente' });
 
+      //Una vez hayado los datos del plato, crea la orden
       const idOrder = await prisma.ordenes.create({
         data: {
           id_platos: namePlate?.id,
@@ -50,6 +51,7 @@ orders.post('/', async (req: CustomRequest, res) => {
         },
       });
 
+      //Guarda y ordena en la BD los variantes que poseen los diferentes platos
       ordersData.buttonsValues.map(async ({ ingredient, title }) => {
         if (ordersData.typeOfProduct === 'Coffee') {
           const idIngredient = await prisma.ordenes_ingredientes_ingrediente.findFirst({
@@ -107,6 +109,7 @@ orders.post('/', async (req: CustomRequest, res) => {
         }
       });
 
+      //Guarda y ordena en la BD los extras que poseen los diferentes platos
       ordersData.extras.map(async ({ ingredient }) => {
         const idExtra = await prisma.extras.findFirst({
           where: { extra: ingredient },
@@ -128,6 +131,7 @@ orders.post('/', async (req: CustomRequest, res) => {
         });
       });
     });
+
     res.status(200).json({ msg: 'Orden creada exitosamente' });
   } catch (err) {
     res.status(500).json({ err });
@@ -136,10 +140,12 @@ orders.post('/', async (req: CustomRequest, res) => {
   }
 });
 
+//Endpoint para mostrar en el frontend la lista de ordenes
 orders.get('/', async (req: CustomRequest, res) => {
   try {
     const userId = req.user?.id;
 
+    //Busca las ordenes de acuerdo al cliente registrado
     const ordenesConClientes = await prisma.ordenes.findMany({
       where: { id_cliente: userId },
       include: {
@@ -151,6 +157,7 @@ orders.get('/', async (req: CustomRequest, res) => {
       },
     });
 
+    //Ordena la informacion de la BD para mostrarla en el frontend
     const ordenesMapeadas = await Promise.all(
       ordenesConClientes.map(
         async ({ id, id_orden, id_platos, cantidad, precio_total, id_cliente, fecha_creacion, menu }) => {
@@ -220,6 +227,7 @@ orders.get('/', async (req: CustomRequest, res) => {
 
     const ordenesAgrupadas: ordersReady = {};
 
+    //Este metodo diferencia las ordenes mediante objetos en donde la clave es el numero o id de orden, y el valor es toda la informacion de esa orden. { 1 : infoDeLaOrden1, 2 : infoDeLaOrden2, etc ... }
     ordenesMapeadas.forEach((orden) => {
       const { idOrden } = orden;
       if (!ordenesAgrupadas[idOrden]) ordenesAgrupadas[idOrden] = [];

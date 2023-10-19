@@ -12,7 +12,7 @@ const AuthProvider: React.FC<ChildrenProps> = ({ children }) => {
     const storedUserInfo = localStorage.getItem('userInfo');
 
     const [userToken, setUserToken] = useState<string | null>(storedToken);
-    const [userInfo, setUserInfo] = useState<userInfo | null>(storedUserInfo ? JSON.parse(storedUserInfo) : null);
+    const [userInfo, setUserInfo] = useState<userInfo | null>(storedUserInfo ? JSON.parse(storedUserInfo) : '');
 
     const login = (token: string, userInfo: userInfo) => {
       if (token && userInfo) {

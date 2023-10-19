@@ -20,8 +20,10 @@ import { Table, TableHeader, TableBody, TableColumn, TableRow, TableCell, Button
 import useCart from '../hooks/useCart';
 
 const Cart = () => {
+  //Context
   const { cartOrders, setCartOrders } = useContext(CartOrdersContext) as CartOrdersContextType;
 
+  //Custom Hook
   const { fetchingRestaurantMenu } = useCart();
 
   useEffect(() => {
