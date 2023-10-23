@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "npm install -g pnpm npm install && concurrently \"cd backend && pnpm install && npx prisma migrate deploy --schema src/prisma/schema.prisma && npx prisma db seed && npm run start\" \"cd frontend && npm install && npm run dev\""
+    "start": "npm install -g pnpm && pnpm install --omit=dev && concurrently \"cd backend && pnpm install --omit=dev && npx prisma migrate deploy --schema src/prisma/schema.prisma && npx prisma db seed && npm run start\" \"cd frontend && npm install && npm run dev\""
   },
   "keywords": [],
   "author": "",
