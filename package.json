@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "npx pnpm install --hoist && concurrently && cd backend && npx pnpm install --hoist && npx prisma migrate deploy --schema src/prisma/schema.prisma && npx prisma db seed && npm run start && cd ../frontend && npm install && npm run start",
+    "start-backend": "cd backend && npx pnpm install --hoist && npx prisma migrate deploy --schema src/prisma/schema.prisma && npx prisma db seed && npm run start",
+    "start-frontend": "cd frontend && npm install && npm run start",
+    "start": "npx pnpm install --hoist && npm run start-backend && npm run start-frontend",
     "dev": "concurrently \"cd backend && npm run dev\" \"cd frontend && npm run dev\""
   },
   "keywords": [],
