@@ -39,7 +39,7 @@ const Auth = () => {
             classNames={{
               tabList: 'flex justify-start items-start border border-red-500',
             }}
-            onSelectionChange={setTypeOfAuth}
+            onSelectionChange={() => setTypeOfAuth}
           >
             <Tab key='Signin' title='Iniciar Sesion'>
               <Divider />

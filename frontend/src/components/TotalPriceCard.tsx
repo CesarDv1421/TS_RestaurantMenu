@@ -114,7 +114,7 @@ const TotalPriceCard = ({ children }: { children: number }) => {
                 aria-label='Tabs form'
                 id='Tabs'
                 selectedKey={selected}
-                onSelectionChange={setSelected}
+                onSelectionChange={() => setSelected}
                 classNames={{
                   tabList: 'flex justify-evenly gap-6 w-full relative',
                   cursor: 'w-full bg-[#2ecc71]',
