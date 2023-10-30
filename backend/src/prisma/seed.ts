@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
 const main = async () => {
@@ -194,57 +194,80 @@ const main = async () => {
     },
   ];
 
-  const ordenes_ingredientes_ingrediente = [
+  const opciones_personalizados_valores = [
     {
       id: 1,
-      ingrediente: 'S',
+      id_opcion_personalizada: { connect: { opcion: 'Mood' } },
+      valor: 'Frío',
     },
     {
       id: 2,
-      ingrediente: 'M',
+      id_opcion_personalizada: { connect: { opcion: 'Mood' } },
+      valor: 'Caliente',
     },
     {
       id: 3,
-      ingrediente: 'L',
+      id_opcion_personalizada: { connect: { opcion: 'Tamaño' } },
+      valor: 'S',
     },
     {
       id: 4,
-      ingrediente: '30%',
+      id_opcion_personalizada: { connect: { opcion: 'Tamaño' } },
+      valor: 'M',
     },
     {
       id: 5,
-      ingrediente: '50%',
+      id_opcion_personalizada: { connect: { opcion: 'Tamaño' } },
+      valor: 'L',
     },
     {
       id: 6,
-      ingrediente: '70%',
+      id_opcion_personalizada: { connect: { opcion: 'Azúcar' } },
+      valor: '30%',
     },
     {
       id: 7,
-      ingrediente: 'Frio',
+      id_opcion_personalizada: { connect: { opcion: 'Azúcar' } },
+      valor: '50%',
     },
     {
       id: 8,
-      ingrediente: 'Caliente',
+      id_opcion_personalizada: { connect: { opcion: 'Azúcar' } },
+      valor: '70%',
+    },
+    {
+      id: 9,
+      id_opcion_personalizada: { connect: { opcion: 'Hielo' } },
+      valor: '30%',
+    },
+    {
+      id: 10,
+      id_opcion_personalizada: { connect: { opcion: 'Hielo' } },
+      valor: '50%',
+    },
+    {
+      id: 11,
+      id_opcion_personalizada: { connect: { opcion: 'Hielo' } },
+      valor: '70%',
     },
   ];
 
-  const ordenes_ingredientes_titulos = [
+  const opciones_personalizados = [
     {
       id: 1,
-      titulo: 'Azucar',
+      opcion: 'Mood',
     },
     {
       id: 2,
-      titulo: 'Hielo',
+      opcion: 'Tamaño',
     },
     {
       id: 3,
-      titulo: 'Mood',
+      opcion: 'Azúcar',
     },
     {
       id: 4,
-      titulo: 'Tamaño',
+      opcion: 'Hielo',
     },
   ];
 
@@ -501,22 +524,27 @@ const main = async () => {
     },
   ];
 
-  for (const ordenesIngrediente of ordenes_ingredientes_ingrediente) {
-    await prisma.ordenes_ingredientes_ingrediente.upsert({
+  for (const ordenesIngrediente of opciones_personalizados_valores) {
+    await prisma.opciones_personalizados_valores.upsert({
       where: { id: ordenesIngrediente.id },
       update: {},
       create: {
-        ingrediente: ordenesIngrediente.ingrediente,
+        valor: ordenesIngrediente.valor,
+        opciones_personalizados: {
+          connect: {
+            id: ordenesIngrediente.id,
+          },
+        },
       },
     });
   }
 
-  for (const ordenesIngrTitulo of ordenes_ingredientes_titulos) {
-    await prisma.ordenes_ingredientes_titulos.upsert({
+  for (const ordenesIngrTitulo of opciones_personalizados) {
+    await prisma.opciones_personalizados.upsert({
       where: { id: ordenesIngrTitulo.id },
       update: {},
       create: {
-        titulo: ordenesIngrTitulo.titulo,
+        opcion: ordenesIngrTitulo.opcion,
       },
     });
   }
@@ -657,3 +685,5 @@ main()
   .finally(async () => {
     await prisma.$disconnect();
   });
+
+module.exports = { main };

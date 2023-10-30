@@ -14,28 +14,28 @@ model categorias {
 }
 
 model menu {
-  id                                 Int                                  @id @default(autoincrement())
-  nombre                             String                               @db.VarChar(50)
-  descripcion                        String                               @db.VarChar(200)
-  precio                             Decimal?                             @db.Decimal(10, 2)
-  img                                String                               @default("coffee.jpg") @db.VarChar(50)
-  id_categoria                       Int
-  categorias                         categorias                           @relation(fields: [id_categoria], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "categoria")
-  ordenes                            ordenes[]
-  ordenes_extras                     ordenes_extras[]
-  ordenes_ingredientes               ordenes_ingredientes[]
-  platos_con_extras                  platos_con_extras[]
-  platos_con_ingredientes_opcionales platos_con_ingredientes_opcionales[]
-  variantes                          variantes[]
+  id                                    Int                                     @id @default(autoincrement())
+  nombre                                String                                  @db.VarChar(50)
+  descripcion                           String                                  @db.VarChar(200)
+  precio                                Decimal?                                @db.Decimal(10, 2)
+  img                                   String                                  @default("coffee.jpg") @db.VarChar(50)
+  id_categoria                          Int
+  categorias                            categorias                              @relation(fields: [id_categoria], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "categoria")
+  ordenes_platos                        ordenes_platos[]
+  ordenes_platos_extras                 ordenes_platos_extras[]
+  ordenes_platos_valores_personalizados ordenes_platos_valores_personalizados[]
+  platos_con_extras                     platos_con_extras[]
+  platos_con_ingredientes_opcionales    platos_con_ingredientes_opcionales[]
+  variantes                             variantes[]
 
   @@index([id_categoria], map: "categoria")
 }
 
 model tipos_de_variantes {
-  id                   Int                    @id @default(autoincrement())
-  variante             String                 @db.VarChar(50)
-  ordenes_ingredientes ordenes_ingredientes[]
-  variantes            variantes[]
+  id                       Int                        @id @default(autoincrement())
+  variante                 String                     @db.VarChar(50)
+  ordenes_platos_variantes ordenes_platos_variantes[]
+  variantes                variantes[]
 }
 
 model variantes {
@@ -51,18 +51,18 @@ model variantes {
 }
 
 model extras {
-  id                Int                 @id @default(autoincrement())
-  extra             String              @db.VarChar(50)
-  ordenes_extras    ordenes_extras[]
-  platos_con_extras platos_con_extras[]
+  id                    Int                     @id @default(autoincrement())
+  extra                 String                  @db.VarChar(50)
+  ordenes_platos_extras ordenes_platos_extras[]
+  platos_con_extras     platos_con_extras[]
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model ingredientes_opcionales {
-  id                                 Int                                  @id @default(autoincrement())
-  ingrediente                        String?                              @db.VarChar(50)
-  ordenes_ingredientes               ordenes_ingredientes[]
-  platos_con_ingredientes_opcionales platos_con_ingredientes_opcionales[]
+  id                                    Int                                     @id @default(autoincrement())
+  ingrediente                           String?                                 @db.VarChar(50)
+  ordenes_platos_ingredientesopcionales ordenes_platos_ingredientesopcionales[]
+  platos_con_ingredientes_opcionales    platos_con_ingredientes_opcionales[]
 }
 
 model platos_con_extras {
@@ -107,68 +107,99 @@ model roles {
 }
 
 model ordenes {
-  id                                                            Int                    @id @default(autoincrement())
-  id_orden                                                      Int
-  id_platos                                                     Int
-  cantidad                                                      Int
-  precio_total                                                  Decimal                @db.Decimal(10, 2)
-  id_cliente                                                    Int
-  fecha_creacion                                                DateTime               @db.DateTime(0)
-  clientes                                                      clientes               @relation(fields: [id_cliente], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_ordenes_clientes")
-  menu                                                          menu                   @relation(fields: [id_platos], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_ordenes_menu")
-  ordenes_extras_ordenes_extras_id_ordenesToordenes             ordenes_extras[]       @relation("ordenes_extras_id_ordenesToordenes")
-  ordenes_ingredientes_ordenes_ingredientes_id_ordenesToordenes ordenes_ingredientes[] @relation("ordenes_ingredientes_id_ordenesToordenes")
+  id                   Int              @id @default(autoincrement())
+  id_cliente           Int
+  fecha_creacion       DateTime         @db.DateTime(0)
+  clientes             clientes         @relation(fields: [id_cliente], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_ordenes_clientes")
+  other_ordenes_platos ordenes_platos[] @relation("ordenes_platosToordenes_platos")
 
   @@index([id_cliente], map: "FK_ordenes_clientes")
-  @@index([id_platos], map: "FK_ordenes_menu")
 }
 
-model ordenes_extras {
-  id                                         Int     @id @default(autoincrement())
-  id_menu                                    Int     @default(0)
-  id_ingrediente                             Int
-  precio                                     Decimal @db.Decimal(10, 2)
-  id_ordenes                                 Int
-  extras                                     extras  @relation(fields: [id_ingrediente], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_ordenes_extras_extras")
-  menu                                       menu    @relation(fields: [id_menu], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_ordenes_extras_menu")
-  ordenes_ordenes_extras_id_ordenesToordenes ordenes @relation("ordenes_extras_id_ordenesToordenes", fields: [id_ordenes], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_ordenes_extras_ordenes")
-
-  @@index([id_ordenes], map: "FK_ordenes_extras_ordenes")
-  @@index([id_ingrediente], map: "FK_ordenes_extras_extras")
-  @@index([id_menu], map: "FK_ordenes_extras_menu")
+model opciones_personalizados {
+  id                                    Int                                     @id @default(autoincrement())
+  opcion                                String                                  @default("") @db.VarChar(50)
+  opciones_personalizados_valores       opciones_personalizados_valores[]
+  ordenes_platos_valores_personalizados ordenes_platos_valores_personalizados[]
 }
 
-model ordenes_ingredientes {
-  id                                               Int                               @id @default(autoincrement())
-  id_menu                                          Int
-  id_titulo                                        Int?
-  id_opciones                                      Int?                              @default(0)
-  id_ingrediente                                   Int?                              @default(0)
-  id_variante                                      Int?
-  id_ordenes                                       Int
-  ingredientes_opcionales                          ingredientes_opcionales?          @relation(fields: [id_ingrediente], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_ordenes_ingredientes_ingredientes_opcionales")
-  menu                                             menu                              @relation(fields: [id_menu], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_ordenes_ingredientes_menu")
-  ordenes_ordenes_ingredientes_id_ordenesToordenes ordenes                           @relation("ordenes_ingredientes_id_ordenesToordenes", fields: [id_ordenes], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_ordenes_ingredientes_ordenes")
-  ordenes_ingredientes_ingrediente                 ordenes_ingredientes_ingrediente? @relation(fields: [id_opciones], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_ordenes_ingredientes_ordenes_ingredientes_ingrediente")
-  ordenes_ingredientes_titulos                     ordenes_ingredientes_titulos?     @relation(fields: [id_titulo], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_ordenes_ingredientes_ordenes_ingredientes_titulos")
-  tipos_de_variantes                               tipos_de_variantes?               @relation(fields: [id_variante], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_ordenes_ingredientes_tipos_de_variantes")
+model opciones_personalizados_valores {
+  id                                    Int                                     @id @default(autoincrement())
+  id_opcion_personalizada               Int
+  valor                                 String                                  @default("") @db.VarChar(50)
+  opciones_personalizados               opciones_personalizados                 @relation(fields: [id_opcion_personalizada], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_opciones_personalizados_valores_opciones_personalizados")
+  ordenes_platos_valores_personalizados ordenes_platos_valores_personalizados[]
 
-  @@index([id_ordenes], map: "FK_ordenes_ingredientes_ordenes")
-  @@index([id_opciones], map: "FK_ordenes_ingredientes_ordenes_ingredientes_ingrediente")
-  @@index([id_titulo], map: "FK_ordenes_ingredientes_ordenes_ingredientes_titulos")
-  @@index([id_variante], map: "FK_ordenes_ingredientes_tipos_de_variantes")
-  @@index([id_ingrediente], map: "FK_ordenes_ingredientes_ingredientes_opcionales")
-  @@index([id_menu], map: "FK_ordenes_ingredientes_menu")
+  @@index([id_opcion_personalizada], map: "FK_opciones_personalizados_valores_opciones_personalizados")
 }
 
-model ordenes_ingredientes_ingrediente {
-  id                   Int                    @id @default(autoincrement())
-  ingrediente          String                 @db.VarChar(50)
-  ordenes_ingredientes ordenes_ingredientes[]
+model ordenes_platos {
+  id                                    Int                                     @id @default(autoincrement())
+  id_plato                              Int                                     @default(0)
+  cantidad                              Int
+  precio_total                          Decimal                                 @default(0.00) @db.Decimal(10, 2)
+  id_orden                              Int
+  menu                                  menu                                    @relation(fields: [id_plato], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_ordenes_platos_menu")
+  ordenes_platos                        ordenes                                 @relation("ordenes_platosToordenes_platos", fields: [id_orden], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_ordenes_platos_ordenes_platos")
+  ordenes_platos_extras                 ordenes_platos_extras[]
+  ordenes_platos_ingredientesopcionales ordenes_platos_ingredientesopcionales[]
+  ordenes_platos_valores_personalizados ordenes_platos_valores_personalizados[]
+  ordenes_platos_variantes              ordenes_platos_variantes[]
+
+  @@index([id_plato], map: "FK_ordenes_platos_menu")
+  @@index([id_orden], map: "FK_ordenes_platos_ordenes")
 }
 
-model ordenes_ingredientes_titulos {
-  id                   Int                    @id @default(autoincrement())
-  titulo               String                 @db.VarChar(50)
-  ordenes_ingredientes ordenes_ingredientes[]
+model ordenes_platos_extras {
+  id             Int            @id @default(autoincrement())
+  id_plato       Int
+  id_extra       Int
+  precio         Decimal        @default(0.00) @db.Decimal(10, 2)
+  id_orden_plato Int
+  extras         extras         @relation(fields: [id_extra], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_ordenes_platos_extras_extras")
+  menu           menu           @relation(fields: [id_plato], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_ordenes_platos_extras_menu")
+  ordenes        ordenes_platos @relation(fields: [id_orden_plato], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_ordenes_platos_extras_ordenes")
+
+  @@index([id_extra], map: "FK_ordenes_platos_extras_extras")
+  @@index([id_plato], map: "FK_ordenes_platos_extras_menu")
+  @@index([id_orden_plato], map: "FK_ordenes_platos_extras_ordenes")
+}
+
+model ordenes_platos_ingredientesopcionales {
+  id                      Int                     @id @default(autoincrement())
+  id_ingredienteOpcional  Int
+  id_orden_plato          Int
+  ingredientes_opcionales ingredientes_opcionales @relation(fields: [id_ingredienteOpcional], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK__ingredientes_opcionales")
+  ordenes                 ordenes_platos          @relation(fields: [id_orden_plato], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_ordenes_platos_ingredientesopcionales_ordenes")
+
+  @@index([id_ingredienteOpcional], map: "FK__ingredientes_opcionales")
+  @@index([id_orden_plato], map: "FK_ordenes_platos_ingredientesopcionales_ordenes")
+}
+
+model ordenes_platos_valores_personalizados {
+  id                              Int                             @id @default(autoincrement())
+  id_plato                        Int                             @default(0)
+  id_opcion_personalizado         Int
+  id_valor_personalizado          Int
+  id_orden_plato                  Int
+  opciones_personalizados_valores opciones_personalizados_valores @relation(fields: [id_valor_personalizado], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_opciones_personalizados_valores")
+  menu                            menu                            @relation(fields: [id_plato], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_ordenes_platos_valores_personalizados_menu")
+  opciones_personalizados         opciones_personalizados         @relation(fields: [id_opcion_personalizado], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_ordenes_platos_valores_personalizados_opciones_personalizados")
+  ordenes                         ordenes_platos                  @relation(fields: [id_orden_plato], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_ordenes_platos_valores_personalizados_ordenes")
+
+  @@index([id_valor_personalizado], map: "FK_opciones_personalizados_valores")
+  @@index([id_plato], map: "FK_ordenes_platos_valores_personalizados_menu")
+  @@index([id_opcion_personalizado], map: "FK_ordenes_platos_valores_personalizados_opciones_personalizados")
+  @@index([id_orden_plato], map: "FK_ordenes_platos_valores_personalizados_ordenes")
+}
+
+model ordenes_platos_variantes {
+  id                 Int                @id @default(autoincrement())
+  id_variante        Int
+  id_orden_plato     Int
+  ordenes            ordenes_platos     @relation(fields: [id_orden_plato], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_ordenes_platos_variantes_ordenes")
+  tipos_de_variantes tipos_de_variantes @relation(fields: [id_variante], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_ordenes_platos_variantes_tipos_de_variantes")
+
+  @@index([id_orden_plato], map: "FK_ordenes_platos_variantes_ordenes")
+  @@index([id_variante], map: "FK_ordenes_platos_variantes_tipos_de_variantes")
 }

@@ -7,11 +7,7 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 //Interfaces
-import { ordersData, ordersInComing } from '../interfaces/orders';
-
-interface ordersReady {
-  [key: string]: ordersData[];
-}
+import { ordersInComing } from '../interfaces/orders';
 
 interface CustomRequest extends Request {
   user?: JwtPayload; // Agrega la propiedad 'user' al objeto 'req'
@@ -20,58 +16,53 @@ interface CustomRequest extends Request {
 orders.post('/', async (req: CustomRequest, res) => {
   try {
     const orders = req.body as ordersInComing[];
-    const userId = req.user?.id;
+    const userId = req.user?.userId;
 
-    if (!userId) return res.status(400).json({ err: 'Autenticacion fallida, usuario no encontrado' });
+    if (!userId) return res.status(401).json({ err: 'Autenticacion fallida, usuario no encontrado' });
 
-    const lastOrder = await prisma.ordenes.findFirst({
-      orderBy: { fecha_creacion: 'desc' }, // Ordena por fecha en orden descendente para obtener la última orden
+    const idOrder = await prisma.ordenes.create({
+      data: {
+        id_cliente: userId,
+        fecha_creacion: new Date(),
+      },
     });
 
-    //Metodo para ordenar las "ordenes" por id, que son efectuadas por cada vez que se ejecute una compra exitosa. Esto hace que aún cuando hayan ordenes con multiples platos, se pueda diferenciar de una orden hecha por cada vez que se realice una compra.
-    const nextOrderNumber = lastOrder ? lastOrder.id_orden + 1 : 1;
-
     orders.map(async (ordersData) => {
-      //Busca en la BD los datos del plato que estan siendo ordenados
-      const namePlate = await prisma.menu.findFirst({
-        where: { nombre: ordersData.name },
-      });
+      //Busca los datos del plato que estan siendo ordenados
+      const namePlate = await prisma.menu.findFirst({ where: { nombre: ordersData.name } });
 
       if (!namePlate) return res.status(400).json({ err: 'Plato no encontrado, orden no creada, intente nuevamente' });
 
-      //Una vez hayado los datos del plato, crea la orden
-      const idOrder = await prisma.ordenes.create({
+      const idPlateOrder = await prisma.ordenes_platos.create({
         data: {
-          id_platos: namePlate?.id,
-          id_orden: nextOrderNumber,
+          id_plato: ordersData.id,
           cantidad: ordersData.quanty,
           precio_total: ordersData.price,
-          id_cliente: userId,
-          fecha_creacion: new Date(),
+          id_orden: idOrder.id,
         },
       });
 
       //Guarda y ordena en la BD los variantes que poseen los diferentes platos
       ordersData.buttonsValues.map(async ({ ingredient, title }) => {
         if (ordersData.typeOfProduct === 'Coffee') {
-          const idIngredient = await prisma.ordenes_ingredientes_ingrediente.findFirst({
-            where: { ingrediente: ingredient },
+          const idOption = await prisma.opciones_personalizados.findFirst({
+            where: { opcion: title },
           });
 
-          const idNameTitle = await prisma.ordenes_ingredientes_titulos.findFirst({
-            where: { titulo: title },
+          const idValue = await prisma.opciones_personalizados_valores.findFirst({
+            where: { valor: ingredient },
           });
 
-          await prisma.ordenes_ingredientes.create({
-            data: {
-              id_menu: ordersData.id,
-              id_titulo: idNameTitle?.id,
-              id_opciones: idIngredient?.id,
-              id_variante: null,
-              id_ingrediente: null,
-              id_ordenes: idOrder.id,
-            },
-          });
+          if (idValue && idOption)
+            await prisma.ordenes_platos_valores_personalizados.create({
+              data: {
+                id_plato: ordersData.id,
+                id_opcion_personalizado: idOption.id,
+                id_valor_personalizado: idValue.id,
+                id_orden_plato: idPlateOrder.id,
+              },
+            });
+          else res.status(400).json({ msg: 'no se encontraron los valores' });
         }
 
         if (ordersData.typeOfProduct === 'Variants') {
@@ -79,16 +70,13 @@ orders.post('/', async (req: CustomRequest, res) => {
             where: { variante: ingredient },
           });
 
-          await prisma.ordenes_ingredientes.create({
-            data: {
-              id_menu: ordersData.id,
-              id_titulo: null,
-              id_opciones: null,
-              id_variante: idVariant?.id,
-              id_ingrediente: null,
-              id_ordenes: idOrder.id,
-            },
-          });
+          if (idVariant)
+            await prisma.ordenes_platos_variantes.create({
+              data: {
+                id_variante: idVariant.id,
+                id_orden_plato: idPlateOrder.id,
+              },
+            });
         }
 
         if (ordersData.typeOfProduct === 'Custom') {
@@ -96,16 +84,13 @@ orders.post('/', async (req: CustomRequest, res) => {
             where: { ingrediente: ingredient },
           });
 
-          await prisma.ordenes_ingredientes.create({
-            data: {
-              id_menu: ordersData.id,
-              id_titulo: null,
-              id_opciones: null,
-              id_variante: null,
-              id_ingrediente: idIngredient?.id,
-              id_ordenes: idOrder.id,
-            },
-          });
+          if (idIngredient)
+            await prisma.ordenes_platos_ingredientesopcionales.create({
+              data: {
+                id_ingredienteOpcional: idIngredient.id,
+                id_orden_plato: idPlateOrder.id,
+              },
+            });
         }
       });
 
@@ -121,12 +106,12 @@ orders.post('/', async (req: CustomRequest, res) => {
 
         if (!extras) return res.status(400).json({ err: 'Extra no encontrado' });
 
-        await prisma.ordenes_extras.create({
+        await prisma.ordenes_platos_extras.create({
           data: {
-            id_menu: ordersData.id,
-            id_ingrediente: extras?.id_extra,
+            id_plato: ordersData.id,
+            id_extra: extras?.id_extra,
             precio: extras?.price,
-            id_ordenes: idOrder.id,
+            id_orden_plato: idPlateOrder.id,
           },
         });
       });
@@ -140,101 +125,106 @@ orders.post('/', async (req: CustomRequest, res) => {
   }
 });
 
-//Endpoint para mostrar en el frontend la lista de ordenes
 orders.get('/', async (req: CustomRequest, res) => {
   try {
     const userId = req.user?.id;
 
     //Busca las ordenes de acuerdo al cliente registrado
-    const ordenesConClientes = await prisma.ordenes.findMany({
+    const orders = await prisma.ordenes.findMany({
       where: { id_cliente: userId },
-      include: {
-        menu: {
-          select: {
-            nombre: true,
-          },
-        },
-      },
     });
 
-    //Ordena la informacion de la BD para mostrarla en el frontend
-    const ordenesMapeadas = await Promise.all(
-      ordenesConClientes.map(
-        async ({ id, id_orden, id_platos, cantidad, precio_total, id_cliente, fecha_creacion, menu }) => {
-          const ingredientes = await prisma.ordenes_ingredientes.findMany({
-            orderBy: { id: 'asc' },
-            where: { id_ordenes: id },
-            include: {
-              ingredientes_opcionales: true,
-              ordenes_ingredientes_ingrediente: true,
-              ordenes_ingredientes_titulos: true,
-              tipos_de_variantes: true,
-            },
-          });
+    const ordersMap = await Promise.all(
+      //Luego de encontrar las ordenes propias del cliente, busca los platos correspondientes a las ordenes
+      orders.map(async ({ id: idOrders, fecha_creacion, id_cliente }) => {
+        const platesOrders = await prisma.ordenes_platos.findMany({
+          where: { id_orden: idOrders },
+          include: { menu: true },
+        });
 
-          const filterValues = ingredientes.map((data) => {
-            if (data.ordenes_ingredientes_ingrediente?.ingrediente) {
+        //Luego se encarga de ordenar la informacion de cada plato, como los variantes, extras etc...
+        const plateOrder = await Promise.all(
+          platesOrders.map(async ({ id: idPlatesOrders, id_plato, cantidad, precio_total, id_orden, menu }) => {
+            //Tanto los extras, ingredientes opcionales y valores personalizado son convertidos en array de objetos
+            //Ej. extras: [ { extra: "Carne", precio: 4.50 }  { extra: "Papas", precio: 2.00 } ]
+
+            const extras = await prisma.ordenes_platos_extras.findMany({
+              where: { id_orden_plato: idPlatesOrders },
+              include: { extras: true },
+            });
+
+            const filterExtras = extras.map(({ extras, precio }) => {
               return {
-                ...data.ordenes_ingredientes_ingrediente,
-                ...data.ordenes_ingredientes_titulos,
+                ...extras,
+                precio,
               };
-            }
+            });
 
-            if (data.tipos_de_variantes?.variante) {
+            const opcionalIngredients = await prisma.ordenes_platos_ingredientesopcionales.findMany({
+              where: { id_orden_plato: idPlatesOrders },
+              include: { ingredientes_opcionales: true },
+            });
+
+            const filterOpcionalIngredients = opcionalIngredients.map(({ ingredientes_opcionales }) => {
               return {
-                ...data.tipos_de_variantes,
+                ...ingredientes_opcionales,
               };
-            }
+            });
 
-            if (data.ingredientes_opcionales?.ingrediente) {
-              return {
-                ...data.ingredientes_opcionales,
-              };
-            }
+            const customValues = await prisma.ordenes_platos_valores_personalizados.findMany({
+              where: { id_orden_plato: idPlatesOrders },
+              include: {
+                opciones_personalizados: true,
+                opciones_personalizados_valores: true,
+              },
+            });
 
-            return null;
-          });
+            const filterCustomValues = customValues.map(
+              ({ opciones_personalizados, opciones_personalizados_valores }) => {
+                return {
+                  opcion: opciones_personalizados.opcion,
+                  valor: opciones_personalizados_valores.valor,
+                };
+              }
+            );
 
-          const extras = await prisma.ordenes_extras.findMany({
-            orderBy: { id: 'asc' },
-            where: { id_ordenes: id },
-            include: {
-              extras: true,
-            },
-          });
+            //Los variantes no es un array de objetos, sino unicamente un string ...
+            // Ej. variantes: "Queso Completo"
+            const variants = await prisma.ordenes_platos_variantes.findFirst({
+              where: { id_orden_plato: idPlatesOrders },
+              include: {
+                tipos_de_variantes: true,
+              },
+            });
 
-          const filterExtra = extras.map(({ precio, extras }) => {
             return {
-              precio,
-              ...extras,
+              id: idPlatesOrders,
+              cantidad: cantidad,
+              precioTotal: Number(precio_total),
+              fechaCreacion: fecha_creacion,
+              nombrePlato: menu.nombre,
+              idCliente: id_cliente,
+              variantes: variants?.tipos_de_variantes.variante || [],
+              valoresPersonalizados: filterCustomValues,
+              ingredientesOpcionales: filterOpcionalIngredients,
+              extras: filterExtras,
             };
-          });
+          })
+        );
 
-          return {
-            id,
-            idOrden: id_orden,
-            cantidad: cantidad,
-            precioTotal: Number(precio_total),
-            fechaCreacion: fecha_creacion,
-            nombrePlato: menu.nombre,
-            idCliente: id_cliente,
-            valores: filterValues,
-            extras: filterExtra,
-          };
-        }
-      )
+        // Esto retorna la siguiente estructura:
+        // Array de objetos, donde cada objeto es tiene como clave el id de la orden y valor un array de objetos de los platos de esa orden,
+        // [ { 'idOrden1': [ { platos }, { platos } ] }, { 'idOrden2': [ { platos }, { platos } ] } ]
+        return { [idOrders]: plateOrder };
+      })
     );
 
-    const ordenesAgrupadas: ordersReady = {};
+    // Esto ordena la estructura de datos de esta forma:
+    // Objeto en donde la clave es el id de la orden y el valor un array de objetos con cada uno de los platos de esa orden
+    // { idOrden1: [{ platos }, { platos }], idOrden2: [{ platos }, { platos }] }
+    const ordersData = Object.assign({}, ...ordersMap);
 
-    //Este metodo diferencia las ordenes mediante objetos en donde la clave es el numero o id de orden, y el valor es toda la informacion de esa orden. { 1 : infoDeLaOrden1, 2 : infoDeLaOrden2, etc ... }
-    ordenesMapeadas.forEach((orden) => {
-      const { idOrden } = orden;
-      if (!ordenesAgrupadas[idOrden]) ordenesAgrupadas[idOrden] = [];
-      ordenesAgrupadas[idOrden].push(orden);
-    });
-
-    return res.status(201).json({ ordenesAgrupadas });
+    return res.status(201).json({ ordersData });
   } catch (err) {
     res.status(500).json({ err });
   } finally {
