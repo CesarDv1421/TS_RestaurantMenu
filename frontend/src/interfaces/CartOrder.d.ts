@@ -1,7 +1,3 @@
-import React from 'react';
-
-//Objetos de el CartOrders
-
 export interface TogglesValues {
   name: string;
   title: string;

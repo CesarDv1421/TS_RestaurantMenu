@@ -1,5 +1,3 @@
-import css from './ProductCard.module.css';
-
 interface ChildrenProps {
   children: React.ReactNode;
   name: string;
@@ -10,9 +8,9 @@ interface ChildrenProps {
 
 const ProductCard: React.FC<ChildrenProps> = ({ children, name, description, img, price }) => {
   return (
-    <div className={css.container}>
+    <div className='rounded-xl p-5 bg-white border-3 border-blue-400 shadow-custom'>
       <div className='flex'>
-        <img src={img} className='w-24 rounded-lg' alt='Imagen del producto' />
+        <img src={img} className='w-24 rounded-lg select-none' alt='Imagen del producto' />
         <div className='px-3 flex w-full flex-col justify-between'>
           <h1>{name}</h1>
           <p>{description}</p>

@@ -13,6 +13,7 @@ interface ChildrenProps {
   typeOfProduct: string;
   buttonsValues?: TogglesValues[];
   extras?: ExtraItem[];
+  img: string;
 }
 
 interface CartOrdersReturnType {
@@ -45,9 +46,9 @@ const CartMenu: React.FC<ChildrenProps> = ({
   ) as CartOrdersReturnType;
 
   return (
-    <div>
+    <div className='flex rounded-xl z-0 border-red shadow-custom'>
       <div className='w-24'>
-        <img src='http://localhost:3000/img/restaurantImg/coffee.jpg' className='' />
+        <img src='http://localhost:3000/img/restaurantImg/coffee.jpg' className='rounded-tl-lg rounded-bl-lg' />
       </div>
       <div className='flex flex-col justify-around w-full mx-5'>
         <div className='flex justify-between'>
@@ -55,7 +56,9 @@ const CartMenu: React.FC<ChildrenProps> = ({
           <DeleteCartOrderButton id={id} quanty={quanty} buttonsValues={buttonsValues || []} extras={extras || []} />
         </div>
         <div className='flex justify-between items-center'>
-          <span>${price && quanty ? (price * quanty).toFixed(2) : 0}</span>
+          <div className='w-1/3'>
+            <span className='text-lg text-green-800'>${price && quanty ? (price * quanty).toFixed(2) : 0}</span>
+          </div>
           {typeOfProduct === 'Custom' || typeOfProduct === 'Coffee' ? (
             <Popover
               placement='bottom'
@@ -75,10 +78,12 @@ const CartMenu: React.FC<ChildrenProps> = ({
               </PopoverContent>
             </Popover>
           ) : typeOfProduct === 'Normal' ? null : typeOfProduct === 'Variants' ? (
-            <div>{children}</div>
+            <div className='w-1/3'>{children}</div>
           ) : null}
 
-          <SetQuanty quanty={newQuanty} setQuanty={setNewQuanty} />
+          <div className='w-1/2 flex justify-center'>
+            <SetQuanty quanty={newQuanty} setQuanty={setNewQuanty} />
+          </div>
         </div>
       </div>
     </div>

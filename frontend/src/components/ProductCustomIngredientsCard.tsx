@@ -1,9 +1,6 @@
 //NextUI
 import { Button } from '@nextui-org/react';
 
-//CSS Modules
-import css from './ProductCustomIngredientsCard.module.css';
-
 interface ChildrenProps {
   children: React.ReactNode;
   name: string;
@@ -15,9 +12,9 @@ interface ChildrenProps {
 
 const ProductCustomIngredientsCard: React.FC<ChildrenProps> = ({ children, name, description, img, price, onOpen }) => {
   return (
-    <div className={css.container}>
+    <div className='rounded-xl p-5 bg-white border-3 border-green-400 shadow-custom'>
       <div className='flex'>
-        <img src={img} className='w-24 rounded-lg' alt='Imagen del producto' />
+        <img src={img} className='w-24 rounded-lg select-none' alt='Imagen del producto' />
         <div className='flex flex-col justify-between py-0 px-3 w-full'>
           <h1>{name}</h1>
           <p>{description}</p>
@@ -26,9 +23,8 @@ const ProductCustomIngredientsCard: React.FC<ChildrenProps> = ({ children, name,
             <div className='flex w-full'>
               <Button
                 variant='solid'
-                color='success'
                 onPress={() => onOpen()}
-                className='text-white bg-green-500 w-full'
+                className='transform hover:scale-110 text-white bg-green-500 w-full border-green-600 bg-gradient-to-r from-green-500 to-green-700'
               >
                 Custom Order
               </Button>

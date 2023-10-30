@@ -29,18 +29,3 @@
   flex-direction: column;
   gap: 10px;
 }
-
-.orderList {
-  display: flex;
-  flex-direction: column;
-  gap: 25px;
-  padding: 10px;
-}
-
-.orderList > div {
-  display: flex;
-  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
-  border-radius: 10px;
-  overflow: hidden;
-  height: 100%;
-}

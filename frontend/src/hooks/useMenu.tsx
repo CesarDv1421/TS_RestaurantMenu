@@ -58,7 +58,6 @@ const useMenu = () => {
     const filteredFood = copyOfRestaurantMenu.current.filter((food) =>
       food.name.toLowerCase().includes(inputValue.toLocaleLowerCase())
     );
-    console.log(filteredFood);
     return setRestaurantMenu(filteredFood);
   };
 

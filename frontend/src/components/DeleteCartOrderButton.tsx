@@ -20,7 +20,10 @@ const DeleteCartOrderButton: React.FC<ChildrenProps> = ({ id, quanty, buttonsVal
   const { onDeleteCartOrder } = useCartOrders(id, quanty, buttonsValues, extras) as useCartOrdersReturnType;
   return (
     <Tooltip showArrow={true} color='danger' content='Eliminar'>
-      <span onClick={() => onDeleteCartOrder()} className='text-lg text-danger cursor-pointer active:opacity-50'>
+      <span
+        onClick={() => onDeleteCartOrder()}
+        className='text-xl text-danger cursor-pointer active:opacity-50'
+      >
         <DeleteIcon />
       </span>
     </Tooltip>

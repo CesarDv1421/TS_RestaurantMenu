@@ -32,16 +32,19 @@ const Auth = () => {
         <Card className='w-[30%]'>
           <Tabs
             fullWidth
-            size='md'
+            size='lg'
             aria-label='Tabs form'
-            className='px-10 py-5 pb-1'
+            className='px-10 pt-5  flex justify-center'
             selectedKey={typeOfAuth}
+            classNames={{
+              tabList: 'flex justify-start items-start border border-red-500',
+            }}
             onSelectionChange={setTypeOfAuth}
           >
             <Tab key='Signin' title='Iniciar Sesion'>
               <Divider />
-              <CardBody>
-                <div className='w-full h-full flex gap-5 flex-col justify-evenly'>
+              <CardBody className='overflow-hidden'>
+                <div className='w-full h-60 flex gap-5 flex-col justify-evenly'>
                   <Input
                     type='email'
                     variant='bordered'
@@ -82,7 +85,7 @@ const Auth = () => {
             <Tab key='SignUp' title='Registrarse'>
               <Divider />
               <CardBody>
-                <div className='w-full h-full flex gap-5 flex-col justify-evenly'>
+                <div className='w-full h-60 flex gap-5 flex-col justify-evenly'>
                   <Input
                     type='text'
                     variant='bordered'

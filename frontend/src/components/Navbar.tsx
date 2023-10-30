@@ -27,7 +27,7 @@ const Navbar = () => {
     { title: 'Cart', img: Cart, url: '/cart' },
     { title: 'Orders', img: Promo, url: '/orders' },
     {
-      title: 'Sign Out',
+      title: '',
       img: LogOut,
       click: () => {
         logout();
@@ -43,7 +43,7 @@ const Navbar = () => {
           {listNavbar.map(({ title, img, click, url }) => {
             return (
               <li key={title} onClick={click ? () => click() : undefined}>
-                <Link to={`${url}`} className='flex flex-col items-center'>
+                <Link to={`${url ? url : '/auth'}`} className='flex flex-col items-center'>
                   <img src={img} className={title === null ? 'w-12' : 'w-6'} alt='React logo' width='25px' />
                   {title}
                 </Link>

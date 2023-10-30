@@ -15,23 +15,23 @@
 
 export interface TypeOrders {
   id: number;
-  idCliente: number;
-  idOrden: number;
-  nombrePlato: string;
-  precioTotal: number;
   cantidad: number;
+  precioTotal: number;
   fechaCreacion: Date;
-  valores: {
+  nombrePlato: string;
+  idCliente: number;
+  variantes: string;
+  valoresPersonalizados: {
+    opcion: string;
+    valor: string;
+  }[];
+  ingredientesOpcionales: {
     id: number;
-    idOrden?: number;
-    variante?: string;
-    ingrediente?: string;
-    titulo?: string;
-    opciones?: string;
+    ingrediente: string;
   }[];
   extras: {
     id: number;
-    precio: number;
     extra: string;
+    precio: number;
   }[];
-}[]
+}

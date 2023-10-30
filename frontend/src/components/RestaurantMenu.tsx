@@ -3,18 +3,6 @@ import { useState, useContext } from 'react';
 //Interfaces
 import { CartOrderTypes, CartOrdersContextType, TogglesValues } from '../interfaces/CartOrder';
 
-interface ToggleButtons {
-  name: string;
-  title: string;
-  ingredient: string;
-}
-
-interface SnackbarTypes {
-  type: string;
-  styles: string;
-  message: string;
-}
-
 //Context
 //==> CartOrder / Carrito de compras
 import { CartOrdersContext } from '../context/CartOrdersContext.tsx';
@@ -57,10 +45,14 @@ const RestaurantMenu: React.FC<CartOrderTypes> = ({
   ingredients,
   extras,
 }) => {
-  const [toggleButtonsSelected, setToggleButtonsSelected] = useState<ToggleButtons[]>([]); //Estado encargado de obtener el valor de todos los Toggle Buttons
+  const [toggleButtonsSelected, setToggleButtonsSelected] = useState<TogglesValues[]>([]); //Estado encargado de obtener el valor de todos los Toggle Buttons
   const [toggleButtonsExtrasSelected, setToggleButtonsExtrasSelected] = useState<TogglesValues[]>([]); //Mismo funcionamiento que el anterior pero dedicado exclusivamente a los extras que se le puede agregar a un plato
   const [quanty, setQuanty] = useState(1); //Estado encargado de manejar la cantidad del producto que el cliente desea
-  const [snackbarMessage, setSnackbarMessage] = useState<SnackbarTypes>();
+  const [snackbarMessage, setSnackbarMessage] = useState<{
+    type?: string;
+    styles?: string;
+    message: string;
+  }>();
 
   const { cartOrders, setCartOrders } = useContext(CartOrdersContext) as CartOrdersContextType;
 
@@ -74,11 +66,11 @@ const RestaurantMenu: React.FC<CartOrderTypes> = ({
   const onAddToCart = () => {
     if (quanty > 0) {
       const getTypeOfProduct = () => {
-        if (toggleButtonsSelected?.length >= 0 && category === 'Hamburguesas') return 'Custom';
+        if (toggleButtonsSelected.length === 0 && toggleButtonsExtrasSelected.length === 0) return 'Normal';
 
-        if (toggleButtonsSelected?.length === 0) return 'Normal';
+        if (toggleButtonsSelected.length === 4) return 'Coffee';
 
-        if (toggleButtonsSelected?.length === 4) return 'Coffee';
+        if (toggleButtonsSelected.length > 0 && category === 'Hamburguesas') return 'Custom';
 
         const priceOfVariant = variants?.find(({ variant }) => variant === toggleButtonsSelected[0]?.ingredient);
         if (priceOfVariant?.price) return 'Variants';
@@ -135,7 +127,15 @@ const RestaurantMenu: React.FC<CartOrderTypes> = ({
         });
 
         if (existingSimilarOrders) {
+          setSnackbarMessage((prevSnackbarMessage) => {
+            return {
+              ...prevSnackbarMessage,
+              message: 'Producto añadido al carrito exitosamente',
+            };
+          });
+
           existingSimilarOrders.quanty += quanty;
+
           return [...prevOrders];
         }
 
@@ -154,14 +154,13 @@ const RestaurantMenu: React.FC<CartOrderTypes> = ({
       });
 
       setSnackbarMessage((prevSnackbarMessage) => {
-        if (prevSnackbarMessage) {
-          return {
-            ...prevSnackbarMessage,
-            message: 'Producto añadido al carrito exitosamente',
-          };
-        }
-        return prevSnackbarMessage;
+        return {
+          ...prevSnackbarMessage,
+          message: 'Producto añadido al carrito exitosamente',
+        };
       });
+
+      console.log(snackbarMessage);
 
       setQuanty(1);
       setToggleButtonsSelected([]);
@@ -171,32 +170,62 @@ const RestaurantMenu: React.FC<CartOrderTypes> = ({
 
   return (
     <>
-      {category === 'Cafe' && price && (
+      {category === 'Cafe' && (
         <ProductCoffeeCard
           name={name}
           img={img}
           description={description}
-          price={price}
+          price={price || 0}
           toggleButtonsSelected={toggleButtonsSelected}
         >
           <div className={css.toggleMenuContainer}>
             <ToggleMenu title='Mood' onAddToCart={cartOrders}>
-              <ToggleButton setToggleButtonsSelected={setToggleButtonsSelected} name={name} styles={'ToggleButton'}>
+              <ToggleButton
+                setToggleButtonsSelected={setToggleButtonsSelected}
+                name={name}
+                styles={'ToggleButton'}
+                color='bg-gradient-to-r from-green-500 to-green-700'
+                border='border border-green-400'
+              >
                 <CustomImg src={Fire} width='20px' data='Caliente' alt='Fire logo' />
               </ToggleButton>
-              <ToggleButton setToggleButtonsSelected={setToggleButtonsSelected} name={name} styles={'ToggleButton'}>
+              <ToggleButton
+                setToggleButtonsSelected={setToggleButtonsSelected}
+                name={name}
+                styles={'ToggleButton'}
+                color='bg-gradient-to-r from-green-500 to-green-700'
+                border='border border-green-400'
+              >
                 <CustomImg src={Ice} width='20px' data='Frio' alt='Ice logo' />
               </ToggleButton>
             </ToggleMenu>
 
             <ToggleMenu title='Tamaño' onAddToCart={cartOrders}>
-              <ToggleButton setToggleButtonsSelected={setToggleButtonsSelected} name={name} styles={'ToggleButton'}>
+              <ToggleButton
+                setToggleButtonsSelected={setToggleButtonsSelected}
+                name={name}
+                styles={'ToggleButton'}
+                color='bg-gradient-to-r from-green-500 to-green-700'
+                border='border border-green-400'
+              >
                 S
               </ToggleButton>
-              <ToggleButton setToggleButtonsSelected={setToggleButtonsSelected} name={name} styles={'ToggleButton'}>
+              <ToggleButton
+                setToggleButtonsSelected={setToggleButtonsSelected}
+                name={name}
+                styles={'ToggleButton'}
+                color='bg-gradient-to-r from-green-500 to-green-700'
+                border='border border-green-400'
+              >
                 M
               </ToggleButton>
-              <ToggleButton setToggleButtonsSelected={setToggleButtonsSelected} name={name} styles={'ToggleButton'}>
+              <ToggleButton
+                setToggleButtonsSelected={setToggleButtonsSelected}
+                name={name}
+                styles={'ToggleButton'}
+                color='bg-gradient-to-r from-green-500 to-green-700'
+                border='border border-green-400'
+              >
                 L
               </ToggleButton>
             </ToggleMenu>
@@ -204,39 +233,78 @@ const RestaurantMenu: React.FC<CartOrderTypes> = ({
 
           <div className={css.toggleMenuContainer}>
             <ToggleMenu title='Azucar' onAddToCart={cartOrders}>
-              <ToggleButton setToggleButtonsSelected={setToggleButtonsSelected} name={name} styles={'ToggleButton'}>
+              <ToggleButton
+                setToggleButtonsSelected={setToggleButtonsSelected}
+                name={name}
+                styles={'ToggleButton'}
+                color='bg-gradient-to-r from-green-500 to-green-700'
+                border='border border-green-400'
+              >
                 30%
               </ToggleButton>
-              <ToggleButton setToggleButtonsSelected={setToggleButtonsSelected} name={name} styles={'ToggleButton'}>
+              <ToggleButton
+                setToggleButtonsSelected={setToggleButtonsSelected}
+                name={name}
+                styles={'ToggleButton'}
+                color='bg-gradient-to-r from-green-500 to-green-700'
+                border='border border-green-400'
+              >
                 50%
               </ToggleButton>
-              <ToggleButton setToggleButtonsSelected={setToggleButtonsSelected} name={name} styles={'ToggleButton'}>
+              <ToggleButton
+                setToggleButtonsSelected={setToggleButtonsSelected}
+                name={name}
+                styles={'ToggleButton'}
+                color='bg-gradient-to-r from-green-500 to-green-700'
+                border='border border-green-400'
+              >
                 70%
               </ToggleButton>
             </ToggleMenu>
 
             <ToggleMenu title='Hielo' onAddToCart={cartOrders}>
-              <ToggleButton setToggleButtonsSelected={setToggleButtonsSelected} name={name} styles={'ToggleButton'}>
+              <ToggleButton
+                setToggleButtonsSelected={setToggleButtonsSelected}
+                name={name}
+                styles={'ToggleButton'}
+                color='bg-gradient-to-r from-green-500 to-green-700'
+                border='border border-green-400'
+              >
                 30%
               </ToggleButton>
-              <ToggleButton setToggleButtonsSelected={setToggleButtonsSelected} name={name} styles={'ToggleButton'}>
+              <ToggleButton
+                setToggleButtonsSelected={setToggleButtonsSelected}
+                name={name}
+                styles={'ToggleButton'}
+                color='bg-gradient-to-r from-green-500 to-green-700'
+                border='border border-green-400'
+              >
                 50%
               </ToggleButton>
-              <ToggleButton setToggleButtonsSelected={setToggleButtonsSelected} name={name} styles={'ToggleButton'}>
+              <ToggleButton
+                setToggleButtonsSelected={setToggleButtonsSelected}
+                name={name}
+                styles={'ToggleButton'}
+                color='bg-gradient-to-r from-green-500 to-green-700'
+                border='border border-green-400'
+              >
                 70%
               </ToggleButton>
             </ToggleMenu>
           </div>
 
           <AddToCartMenu toggleButtonsSelected={toggleButtonsSelected} toggleLength={4}>
-            <SetQuanty quanty={quanty} setQuanty={setQuanty} />
+            <div className='flex justify-evenly items-center'>
+              <h1 className='select-none'>Cantidad</h1>
+              <SetQuanty quanty={quanty} setQuanty={setQuanty} />
+            </div>
             <Button
               variant='solid'
-              isDisabled={quanty <= 0}
+              isDisabled={quanty <= 0 || toggleButtonsSelected.length < 4}
               onPress={() => onAddToCart()}
-              className='text-white bg-green-500 w-1/2'
+              className='transform hover:scale-110 text-white bg-green-500 w-1/2'
             >
-              Add to Cart
+              Añadir al Carrito
             </Button>
           </AddToCartMenu>
         </ProductCoffeeCard>
@@ -249,6 +317,7 @@ const RestaurantMenu: React.FC<CartOrderTypes> = ({
           img={img}
           toggleButtonsSelected={toggleButtonsSelected}
         >
+          <h1 className='text-center my-2'>Seleccione una variante</h1>
           <div className={css.toggleMenuContainerWithVariants}>
             <ToggleMenu onAddToCart={cartOrders}>
               {variants.map(({ variant, price }) => {
@@ -259,6 +328,8 @@ const RestaurantMenu: React.FC<CartOrderTypes> = ({
                     price={<span>${price}</span>}
                     styles={'ToggleButtonWithVariants'}
                     setToggleButtonsSelected={setToggleButtonsSelected}
+                    color='bg-gradient-to-r from-orange-500 to-orange-700'
+                    border='border-2 border-orange-300'
                   >
                     {variant}
                   </ToggleButton>
@@ -268,14 +339,17 @@ const RestaurantMenu: React.FC<CartOrderTypes> = ({
           </div>
 
           <AddToCartMenu toggleButtonsSelected={toggleButtonsSelected} toggleLength={1}>
-            <SetQuanty quanty={quanty} setQuanty={setQuanty} />
+            <div className='flex justify-evenly items-center'>
+              <h1 className='select-none'>Cantidad</h1>
+              <SetQuanty quanty={quanty} setQuanty={setQuanty} />
+            </div>
             <Button
               variant='solid'
-              isDisabled={quanty <= 0}
+              isDisabled={quanty <= 0 || toggleButtonsSelected.length < 1}
               onPress={() => onAddToCart()}
-              className='text-white bg-green-500 w-1/2'
+              className='transform hover:scale-110 text-white bg-orange-500 w-1/2'
             >
-              Add to Cart
+              Añadir al Carrito
             </Button>
           </AddToCartMenu>
         </ProductVariantCard>
@@ -284,14 +358,17 @@ const RestaurantMenu: React.FC<CartOrderTypes> = ({
       {variants === null && category !== 'Cafe' && category !== 'Hamburguesas' && (
         <ProductCard name={name} description={description} img={img} price={price || 0}>
           <AddToCartMenu toggleButtonsSelected={toggleButtonsSelected} toggleLength={0}>
-            <SetQuanty quanty={quanty} setQuanty={setQuanty} />
+            <div className='flex justify-evenly items-center'>
+              <h1 className='select-none'>Cantidad</h1>
+              <SetQuanty quanty={quanty} setQuanty={setQuanty} />
+            </div>
             <Button
               variant='solid'
               isDisabled={quanty <= 0}
               onPress={() => onAddToCart()}
-              className='text-white bg-blue-500 w-1/2'
+              className='transform hover:scale-110 text-white bg-blue-500 w-1/2'
             >
-              Add to Cart
+              Añadir al Carrito
             </Button>
           </AddToCartMenu>
         </ProductCard>
@@ -314,10 +391,10 @@ const RestaurantMenu: React.FC<CartOrderTypes> = ({
               size='2xl'
               shadow='sm'
               classNames={{
-                backdrop: 'bg-[#292f47]/50 backdrop-opacity-40',
-                base: 'border-[#292f46] bg-[#19172c] dark:bg-[#19172c] text-[#a8b0d3]',
-                header: 'border-b-[1px] border-[#292f46]',
-                footer: 'border-t-[1px] border-[#292f46]',
+                wrapper: 'overflow-hidden',
+                backdrop: 'bg-[#292f47]/50 backdrop-opacity-50',
+                header: 'border-b-[1px]',
+                footer: 'border-t-[1px]',
                 closeButton: 'hover:bg-white/5 active:bg-white/10',
               }}
             >
@@ -367,7 +444,7 @@ const RestaurantMenu: React.FC<CartOrderTypes> = ({
                         Cancelar
                       </Button>
                       <Button color='primary' variant='ghost' onPress={() => onAddToCart()} onClick={onClose}>
-                        Anadir al Carrito
+                        Añadir al Carrito
                       </Button>
                     </ModalFooter>
                   </>

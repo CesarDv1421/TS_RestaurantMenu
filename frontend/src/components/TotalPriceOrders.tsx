@@ -1,11 +1,8 @@
 import useServicesPercentage, { ServicesPercentageResult } from '../hooks/useServicesPercentage';
 
-interface ChildrenProps {
-  children: number;
-}
-const TotalPriceOrders: React.FC<ChildrenProps> = ({ children }) => {
+const TotalPriceOrders = ({ price }: { price: number }) => {
   const { iva, subtotal, servicio, total, totalInBs, ivaPercentage, servicePercentage } = useServicesPercentage(
-    children
+    price
   ) as ServicesPercentageResult;
   return (
     <div className='border-2 border-gray-200 mt-2 rounded-xl'>

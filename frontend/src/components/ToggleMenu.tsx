@@ -24,7 +24,7 @@ const ToggleMenu: React.FC<ToggleMenuProps> = ({ children, title, onAddToCart })
   }, [onAddToCart]);
 
   return (
-    <div>
+    <div className='select-none'>
       <h1>{title}</h1>
       <div className='flex justify-evenly'>
         {React.Children.map(children, (child) => {

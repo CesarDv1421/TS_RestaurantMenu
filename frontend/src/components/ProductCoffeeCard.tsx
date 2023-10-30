@@ -1,9 +1,6 @@
 //Interafaces
 import { TogglesValues } from '../interfaces/CartOrder';
 
-//CSS Modules
-import css from './ProductCoffeeCard.module.css';
-
 interface ChildrenProps {
   children: React.ReactNode;
   name: string;
@@ -13,18 +10,11 @@ interface ChildrenProps {
   toggleButtonsSelected: TogglesValues[];
 }
 
-const ProductCoffeeCard: React.FC<ChildrenProps> = ({
-  children,
-  name,
-  img,
-  description,
-  price,
-  toggleButtonsSelected,
-}) => {
+const ProductCoffeeCard: React.FC<ChildrenProps> = ({ children, name, img, description, price }) => {
   return (
-    <div className={toggleButtonsSelected.length >= 4 ? css.containerReady : css.container}>
+    <div className='rounded-xl p-5 bg-white border-3 border-green-400 shadow-custom'>
       <div className='flex'>
-        <img src={img} className='w-24 rounded-lg' alt='Imagen del plato' />
+        <img src={img} className='w-24 rounded-lg select-none' alt='Imagen del plato' />
         <div className='flex flex-col justify-between py-0 px-3'>
           <h1>{name}</h1>
           <p>{description}</p>

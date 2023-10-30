@@ -5,8 +5,8 @@ import { Snackbar, Alert } from '@mui/material';
 import { Slide } from '@mui/material';
 
 interface SnackbarTypes {
-  type: string;
-  styles: string;
+  type?: string;
+  styles?: string;
   message: string;
 }
 
@@ -32,7 +32,7 @@ const SnackbarMUI: React.FC<Props> = ({ message, setMessage, style }) => {
         setShowMessage(false);
         setTimeout(() => {
           setMessage({ type: '', styles: '', message: '' });
-        }, 1800);
+        }, 150);
       }}
     >
       <Alert severity={style} variant='filled'>

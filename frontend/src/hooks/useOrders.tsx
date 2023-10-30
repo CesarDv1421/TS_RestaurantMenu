@@ -13,9 +13,9 @@ import { AuthContext } from '../context/AuthContext';
 //API URL
 const API_URL = import.meta.env.VITE_API_URL;
 
-interface OrdersMap {
+type OrdersMap = {
   [key: string]: TypeOrders[];
-}
+};
 
 const useOrders = () => {
   const [orders, setOrders] = useState<OrdersMap>({});
@@ -33,8 +33,8 @@ const useOrders = () => {
           authorization: `Bearer ${userToken}`,
         },
       });
-      const { ordenesAgrupadas, err } = await response.json();
-      setOrders(ordenesAgrupadas);
+      const { ordersData, err } = await response.json();
+      setOrders(ordersData);
 
       if (err) {
         logout();
@@ -52,16 +52,16 @@ const useOrders = () => {
     { name: 'Total', id: 'total' },
   ];
 
-  const renderCell = useCallback((item: TypeOrders, columnKey: React.Key) => {
+  const renderCell = useCallback((order: TypeOrders, columnKey: React.Key) => {
     switch (columnKey) {
       case 'platos':
-        return <div>{item.nombrePlato}</div>;
+        return <div>{order.nombrePlato}</div>;
       case 'notasVariantes':
-        const coffe = item.valores[0]?.ingrediente && item.valores[0]?.titulo;
-        const custom = (item.valores[0]?.ingrediente && !item.valores[0]?.titulo) || item.extras[0]?.extra;
-        const variant = item.valores[0]?.variante;
+        const coffe = order.valoresPersonalizados;
+        const custom = order.ingredientesOpcionales || order.extras;
+        const variant = order.variantes;
 
-        if (coffe) {
+        if (coffe.length > 0) {
           return (
             <Popover
               placement='bottom'
@@ -78,20 +78,18 @@ const useOrders = () => {
               </PopoverTrigger>
               <PopoverContent>
                 <div className='px-1 py-2'>
-                  {item.valores.map(({ ingrediente, titulo }) => {
-                    return (
-                      <div key={ingrediente}>
-                        {titulo} - {ingrediente}
-                      </div>
-                    );
-                  })}
+                  {coffe.map(({ opcion, valor }) => (
+                    <div key={opcion}>
+                      {opcion} - {valor}
+                    </div>
+                  ))}
                 </div>
               </PopoverContent>
             </Popover>
           );
         }
 
-        if (custom) {
+        if (custom.length > 0) {
           return (
             <Popover
               placement='bottom'
@@ -108,16 +106,16 @@ const useOrders = () => {
               </PopoverTrigger>
               <PopoverContent>
                 <div className='px-1 py-2'>
-                  {item.valores.length > 0 && <span>Sin:</span>}
-                  {item.valores.map(({ ingrediente }) => {
+                  {order.ingredientesOpcionales.length > 0 && <span>Sin:</span>}
+                  {custom.map(({ ingrediente }) => {
                     return (
                       <div className='flex flex-col' key={ingrediente}>
                         <div>- {ingrediente}</div>
                       </div>
                     );
                   })}
-                  {item.extras.length > 0 && <span className='py-5'> Con un extra de:</span>}
-                  {item.extras.map(({ extra, precio }) => {
+                  {order.extras.length > 0 && <span className='py-5'> Con un extra de:</span>}
+                  {order.extras.map(({ extra, precio }) => {
                     return (
                       <div key={extra}>
                         - {extra} (+${precio})
@@ -130,29 +128,21 @@ const useOrders = () => {
           );
         }
 
-        if (variant) {
-          return item.valores.map(({ variante }) => {
-            return <div key={variante}>{variante}</div>;
-          });
-        }
-
-        return <div>-</div>;
+        if (variant) return <div>{variant}</div>;
+        else return <div>-</div>;
 
       case 'cantidad':
-        return <div>{item.cantidad}</div>;
+        return <div>{order.cantidad}</div>;
       case 'total':
-        return <div className='relative flex items-center gap-2'>${item.precioTotal}</div>;
+        return <div className='relative flex items-center gap-2'>${order.precioTotal}</div>;
     }
   }, []);
-
-  const numberOfOrders = Object.keys(orders);
 
   return {
     fetchingOrders,
     columns,
     renderCell,
-    numberOfOrders,
-		orders
+    orders,
   };
 };
 

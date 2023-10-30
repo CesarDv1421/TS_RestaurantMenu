@@ -19,8 +19,8 @@ interface ContextValue {
 }
 
 interface SnackbarTypes {
-  type: string;
-  styles: string;
+  type?: string;
+  styles?: string;
   message: string;
 }
 
@@ -138,7 +138,7 @@ const useAuth = () => {
     onSignIn,
     onSignUp,
     toggleVisibility,
-    isPasswordVisible
+    isPasswordVisible,
   };
 };
 

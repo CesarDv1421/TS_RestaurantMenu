@@ -65,8 +65,8 @@ const SliderCategories: React.FC<ChildrenProps> = ({ categories, setDisplayedCat
       {categories.length > 0 && (
         <div>
           <button
-            className={`px-5 py-2 rounded-2xl border-[2px] border-green-500 transition-all ${
-              selectedCategory === 'Menu' ? 'bg-green-500 text-white' : 'bg-opacity-20'
+            className={`px-5 py-2 rounded-2xl border-3 border-green-500 transition-all ${
+              selectedCategory === 'Menu' ? 'bg-gradient-to-r from-green-500 to-green-700 text-white' : 'bg-opacity-20'
             }`}
             onClick={() => onClickToggle('Menu')}
           >
@@ -77,8 +77,10 @@ const SliderCategories: React.FC<ChildrenProps> = ({ categories, setDisplayedCat
       {categories?.map(({ id, categoria }) => (
         <div key={id}>
           <button
-            className={`px-5 py-2 rounded-2xl border-[2px] border-green-500 transition-all ${
-              selectedCategory === categoria ? 'bg-green-500 text-white' : 'bg-opacity-20'
+            className={`px-5 py-2 rounded-2xl border-3 border-green-500 transition-all ${
+              selectedCategory === categoria
+                ? 'bg-gradient-to-r from-green-500 to-green-700 text-white'
+                : 'bg-opacity-20'
             }`}
             onClick={() => onClickToggle(categoria)}
           >

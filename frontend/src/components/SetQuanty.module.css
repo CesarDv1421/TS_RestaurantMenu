@@ -1,19 +1,20 @@
 .quantyOfOrder {
-    display: flex;
-    justify-content: space-evenly;
-    align-items: center;
-    width: 50%;
-  }
-  
-  .quantyOfOrder > div {
-    width: 30px;
-    height: 30px;
-    color: black;
-    border-radius: 100px;
-    background: rgba(0, 0, 0, 0.1);
-    border: solid 2px gray;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-  }
+  user-select: none;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  width: 50%;
+}
+
+.quantyOfOrder > div {
+  width: 30px;
+  height: 30px;
+  color: black;
+  border-radius: 100px;
+  background: rgba(0, 0, 0, 0.1);
+  border: solid 2px gray;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}

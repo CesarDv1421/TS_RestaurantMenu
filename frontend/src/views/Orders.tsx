@@ -4,20 +4,14 @@ import { TypeOrders } from '../interfaces/Orders';
 //Componentes
 import Navbar from '../components/Navbar';
 import TotalPriceOrders from '../components/TotalPriceOrders';
-import useServicesPercentage, { ServicesPercentageResult } from '../hooks/useServicesPercentage';
 
 //Custom Hook
 import useOrders from '../hooks/useOrders';
 
-//Moment
-import moment from 'moment';
-
-//Format
-import { format } from 'timeago.js';
-
 //Next UI
-import { Accordion, AccordionItem, Chip } from '@nextui-org/react';
-import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Button } from '@nextui-org/react';
+import { Accordion, AccordionItem } from '@nextui-org/react';
+import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Button, Link } from '@nextui-org/react';
+import TitleAccordionItem from '../components/TitleAccordionItem';
 
 const motionProps = {
   variants: {
@@ -57,18 +51,20 @@ const motionProps = {
 };
 
 const Orders = () => {
-  const { fetchingOrders, columns, renderCell, numberOfOrders, orders } = useOrders();
+  const { fetchingOrders, columns, renderCell, orders } = useOrders();
 
   useEffect(() => {
     fetchingOrders();
   }, []);
+
+  const numberOfOrders = Object.keys(orders);
 
   return (
     <main className='flex h-screen'>
       <Navbar />
       <div className='w-full flex flex-col'>
         <h1 className='text-2xl m-5'>Órdenes</h1>
-        <div className='flex flex-col overflow-auto mx-3 mb-3 p-3 border-2 border-gray-200 rounded-lg'>
+        <div className='flex flex-col h-full overflow-auto mx-2 mb-2 p-3 border-2 bg-gray-100 border-gray-300 rounded-lg'>
           {numberOfOrders.length > 0 ? (
             <>
               <Accordion
@@ -88,37 +84,13 @@ const Orders = () => {
               >
                 {numberOfOrders.map((data) => {
                   const valores = orders[data];
-                  const idOrdenGlobal = valores[0].idOrden;
                   const orderPrice = Number(valores.reduce((acc, { precioTotal }) => acc + precioTotal, 0).toFixed(2));
-                  const { total } = useServicesPercentage(orderPrice) as ServicesPercentageResult;
-
                   return (
                     <AccordionItem
                       key={data}
                       aria-label='Connected devices'
-                      startContent={`#${idOrdenGlobal}`}
-                      title={
-                        <div className='flex justify-evenly items-center'>
-                          <span>
-                            <span className='text-green-500'>
-                              <Chip className='text-white' color='success' variant='solid'>
-                                Orden completada
-                              </Chip>
-                            </span>
-                          </span>
-                          <div className='border-2 border-gray-200' />
-                          <span>
-                            <span className='text-green-600'> Total ${total}</span>
-                          </span>
-                          <div className='border-2 border-gray-200' />
-                          <span>
-                            {moment(valores[0].fechaCreacion).format('DD MMM YYYY')} -{' '}
-                            {moment(valores[0].fechaCreacion).format('hh:mm')}
-                          </span>
-                          <div className='border-2 border-gray-200' />
-                          <span className='text-primary'> ~ {format(valores[0].fechaCreacion)}</span>
-                        </div>
-                      }
+                      startContent={`#${data}`}
+                      title={<TitleAccordionItem valores={valores} orderPrice={orderPrice} />}
                     >
                       <Table aria-label='Example table with custom cells'>
                         <TableHeader columns={columns}>
@@ -126,23 +98,22 @@ const Orders = () => {
                         </TableHeader>
                         <TableBody items={valores}>
                           {(item: TypeOrders) => (
-                            <TableRow key={`${item.id}-${item.idOrden}`}>
+                            <TableRow key={`${item.id}`}>
                               {(columnKey) => <TableCell>{renderCell(item, columnKey)}</TableCell>}
                             </TableRow>
                           )}
                         </TableBody>
                       </Table>
-
-                      <TotalPriceOrders>{orderPrice}</TotalPriceOrders>
+                      <TotalPriceOrders price={orderPrice} />
                     </AccordionItem>
                   );
                 })}
               </Accordion>
             </>
           ) : (
-            <div className='border border-gray-200 rounded-xl p-5 flex flex-col items-center'>
-              <h1 className='text-3xl'>No hay ordenes existentes</h1>
-              <Button className='m-5' color='primary' variant='ghost'>
+            <div className='p-5 flex flex-col h-full items-center justify-center'>
+              <h1 className='text-3xl'>No hay ordenes existentes...</h1>
+              <Button variant='ghost' className='text-medium my-5' as={Link} href='/menu' color='primary'>
                 Ver Menu...
               </Button>
             </div>

@@ -3,8 +3,8 @@ import { useState } from 'react';
 //Interfaces
 import { TogglesValues } from '../interfaces/CartOrder';
 
-//CSS Modules
-import css from './ToggleIngredientsButton.module.css';
+//NextUI
+import { Button } from '@nextui-org/react';
 
 interface ChildrenProps {
   children: React.ReactNode;
@@ -39,11 +39,18 @@ const ToggleIngredientsButton: React.FC<ChildrenProps> = ({
   };
 
   return (
-    <div className={css.toggleContainer}>
-      <button onClick={() => onToggle()} className={isSelected ? css.toggleButtonSelected : css.toggleButton}>
+    <div>
+      <Button
+        onClick={() => onToggle()}
+        className={`text-s py-2 px-4 rounded-full border-2 cursor-pointer transition-transform duration-1000 ${
+          isSelected
+            ? 'transform hover:scale-110 text-white border-green-600 bg-gradient-to-r from-green-500 to-green-700'
+            : 'transform hover:scale-110 text-black border-gray-500 bg-gradient-to-l from-gray-100 to-gray-300 '
+        }`}
+      >
         {children}
         {priceOfExtra}
-      </button>
+      </Button>
     </div>
   );
 };

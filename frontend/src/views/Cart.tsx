@@ -43,8 +43,12 @@ const Cart = () => {
   return (
     <div className='flex'>
       <Navbar />
-      <div className='w-full h-screen flex flex-col justify-between overflow-hidden'>
-        <Table aria-label='CartOrders' className={`w-full p-5 overflow-auto ${cartOrders.length === 0 && 'h-60'}`}>
+      <div className='w-full h-screen flex flex-col justify-between'>
+        <Table
+          aria-label='CartOrders'
+          classNames={{ wrapper: ['overflow-y-scroll'] }}
+          className={`w-full p-5 ${cartOrders.length === 0 && 'h-60'}`}
+        >
           <TableHeader>
             <TableColumn>Nombre</TableColumn>
             <TableColumn>Notas / Variantes</TableColumn>
@@ -94,22 +98,26 @@ const Cart = () => {
                       <span className='text-medium'>{Number(price).toFixed(2)}</span>
                     </div>
                   </TableCell>
-                  <TableCell className='flex justify-center'>
-                    <QuantyEditor
-                      id={id}
-                      quanty={quanty}
-                      buttonsValues={buttonsValues}
-                      extras={extras}
-                      setCartOrdersList={setCartOrders}
-                    />
-                  </TableCell>
                   <TableCell>
-                    <div className='flex justify-center items-center'>
-                      <span className='text-xl text-green-700'>$</span>
-                      <span className='text-medium'>{(price * quanty).toFixed(2)}</span>
+                    <div className='flex items-center justify-center'>
+                      <QuantyEditor
+                        id={id}
+                        quanty={quanty}
+                        buttonsValues={buttonsValues}
+                        extras={extras}
+                        setCartOrdersList={setCartOrders}
+                      />
                     </div>
                   </TableCell>
-                  <TableCell className='flex justify-center items-center'>
+                  <TableCell>
+                    <div className='flex justify-center items-center text-center'>
+                      <span className='text-xl text-green-700'>$</span>
+                      <div className='w-10 text-center'>
+                        <span className='text-medium'>{(price * quanty).toFixed(2)}</span>
+                      </div>
+                    </div>
+                  </TableCell>
+                  <TableCell className='flex justify-center items-center p-3'>
                     <DeleteCartOrderButton id={id} quanty={quanty} buttonsValues={buttonsValues} extras={extras} />
                   </TableCell>
                 </TableRow>
@@ -117,14 +125,14 @@ const Cart = () => {
           </TableBody>
         </Table>
         {cartOrders.length === 0 && (
-          <div className='rounded-xl h-full mx-5 flex flex-col items-center justify-center gap-5 text-4xl'>
+          <div className=' h-full mx-2 flex flex-col items-center justify-center gap-5 text-4xl'>
             <h1>No hay Articulos en el Carrito ...</h1>
             <Button variant='ghost' className='text-medium' as={Link} href='/menu' color='primary'>
               Ver el Menu
             </Button>
           </div>
         )}
-        <div className='border-2 border-gray-200 rounded-xl m-5'>
+        <div className='border-2 border-gray-300 bg-gray-100 rounded-xl m-2'>
           <TotalPriceCard>
             {cartOrders.reduce((acc, { price, quanty }) => acc + (price || 0) * quanty, 0)}
           </TotalPriceCard>

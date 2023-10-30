@@ -1,6 +1,10 @@
 import React from 'react';
 
+//Interfaces
 import { TogglesValues } from '../interfaces/CartOrder';
+
+//NextUI
+import { Button } from '@nextui-org/react';
 
 interface ImgElementProps {
   src: string;
@@ -16,8 +20,10 @@ interface ChildrenProps {
   title?: string;
   selectedValue?: string;
   setSelectedValue?: React.Dispatch<React.SetStateAction<string | null>>;
-  styles: string;
+  styles: 'ToggleButton' | 'ToggleButtonWithVariants';
   children?: React.ReactNode;
+  color: string;
+  border: string;
 }
 
 const ToggleButton: React.FC<ChildrenProps> = ({
@@ -29,6 +35,8 @@ const ToggleButton: React.FC<ChildrenProps> = ({
   selectedValue,
   setSelectedValue,
   styles,
+  color,
+  border,
 }) => {
   const isImgElement = React.isValidElement(childrenValue);
 
@@ -42,9 +50,7 @@ const ToggleButton: React.FC<ChildrenProps> = ({
     setToggleButtonsSelected((prevSelections) => {
       const newSelection = prevSelections.filter((item) => item.title !== title);
 
-      const updatedSelection = isSelected
-        ? newSelection
-        : [...newSelection, { name, title, ingredient: children as string }];
+      const updatedSelection = isSelected ? newSelection : [...newSelection, { name, title, ingredient: children }];
 
       updatedSelection.sort((a, b) => (a.title && b.title ? a.title.localeCompare(b.title) : 0));
 
@@ -53,22 +59,32 @@ const ToggleButton: React.FC<ChildrenProps> = ({
   };
 
   return (
-    <div className='flex flex-col gap-3 text-center'>
-      <button
-        className={`${
-          styles === 'ToggleButton'
-            ? `w-10 h-10 text-xs text-black rounded-full border-2 flex justify-center items-center cursor-pointer transition duration-300 hover:bg-opacity-20 ${
-                isSelected ? 'bg-opacity-50 border-gray-800' : 'border-gray-300 bg-opacity-10'
-              } `
-            : `text-xs py-2 px-4 rounded-full border-2 cursor-pointer transition-all duration-250 ${
-                isSelected ? 'border-gray-800 bg-gray-800 text-white' : 'border-gray-400 bg-gray-100'
-              }`
-        }`}
-        onClick={toggleButtonClicked}
-        type='button'
-      >
-        {childrenValue}
-      </button>
+    <div className='flex flex-col gap-3 text-center select-none'>
+      {styles === 'ToggleButtonWithVariants' ? (
+        <Button
+          className={`text-xs py-2 px-4 rounded-full border-2 cursor-pointer transition-transform duration-1000 ${
+            isSelected
+              ? `transform hover:scale-110 text-white ${color} ${border}`
+              : 'transform hover:scale-110 text-black border-gray-500 bg-gradient-to-l from-gray-100 to-gray-300 '
+          }`}
+          onClick={toggleButtonClicked}
+          type='button'
+        >
+          {childrenValue}
+        </Button>
+      ) : (
+        <button
+          className={`transform hover:scale-125 active:scale-100 w-10 h-10 text-xs text-black rounded-full border-2 flex justify-center items-center cursor-pointer transition duration-100 hover:bg-opacity-20 ${
+            isSelected
+              ? `transform hover:scale-125 active:scale-100 ${color} ${border} text-white `
+              : 'border-gray-400 bg-gradient-to-l from-gray-100 to-gray-300'
+          } `}
+          onClick={toggleButtonClicked}
+          type='button'
+        >
+          {childrenValue}
+        </button>
+      )}
 
       {price}
     </div>

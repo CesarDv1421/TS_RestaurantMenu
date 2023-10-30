@@ -166,6 +166,7 @@ const TotalPriceCard = ({ children }: { children: number }) => {
                         <h2 className='pb-2 block'>- Subir captura de la transaccion</h2>
                         <Input
                           type='file'
+                          accept='image/jpeg, image/png, image/gif'
                           required
                           validationState={errMessage.type === 'BNcaptureOfTransaction' ? 'invalid' : 'valid'}
                           errorMessage={errMessage.type === 'BNcaptureOfTransaction' && errMessage.message}
@@ -188,23 +189,27 @@ const TotalPriceCard = ({ children }: { children: number }) => {
                   </form>
                 </Tab>
                 <Tab key='paypal' title='Paypal'>
-                  <div className='flex flex-col gap-4'>
-                    <form action='https://www.paypal.com/cgi-bin/webscr' method='post' target='_top'>
+                  <div className='flex flex-col gap-4 h-[425px]'>
+                    <form action='https://www.paypal.com/cgi-bin/webscr' className='h-full' method='post' target='_top'>
                       <input type='hidden' name='cmd' value='_s-xclick' />
                       <input type='hidden' name='hosted_button_id' value='THFW6YYVSBMLQ' />
                       <input type='hidden' name='currency_code' value='USD' />
 
-                      <div className='flex gap-2 justify-end'>
+                      <div className='flex flex-col gap-2 justify-center items-center h-full'>
+                        <h1 className='text-4xl'>Pagar {total}$ con Paypal</h1>
+                        <h2 className='text-center text-sm'>
+                          *Será redirigido a la pagina oficial de Paypal.com para procesar el pago a traves de su cuenta
+                          de Paypal
+                        </h2>
                         <Button
-                          fullWidth
-                          className='text-lg py-5 my-5'
+                          className='text-lg py-5 my-5 px-40'
                           type='submit'
                           name='submit'
                           variant='ghost'
                           color='success'
                           isDisabled={cartOrders.length > 0 ? false : true}
                         >
-                          Pagar {total}$ con Paypal
+                          Pagar
                         </Button>
                       </div>
                     </form>
@@ -282,7 +287,7 @@ const TotalPriceCard = ({ children }: { children: number }) => {
                   </form>
                 </Tab>
                 <Tab key='visaMastercard' title='Visa / MasterCard'>
-                  <form className='flex flex-col gap-4' onSubmit={onSubmit}>
+                  <form className='flex flex-col gap-4 h-[425px] items-center justify-center' onSubmit={onSubmit}>
                     <InputPassword
                       label='Numero de Tarjeta'
                       validationState={errMessage.type === 'cardNumber' ? 'invalid' : 'valid'}

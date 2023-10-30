@@ -56,6 +56,7 @@ const useCartOrders = (
           const buttonsMatch =
             (!order.buttonsValues && !buttonsValues) ||
             (order.buttonsValues &&
+              order.id === id &&
               order.buttonsValues.length === buttonsValues.length &&
               order.buttonsValues.every(({ ingredient }: { ingredient: string }, index: number) => {
                 return ingredient === buttonsValues[index]?.ingredient;
@@ -65,18 +66,16 @@ const useCartOrders = (
           const extrasMatch =
             (!order.extras && !extras) ||
             (order.extras &&
+              order.id === id &&
               order.extras.length === extras.length &&
               order.extras.every(({ ingredient }: { ingredient: string }, index: number) => {
                 return ingredient === extras[index]?.ingredient;
               }));
 
           // Si tanto los ingredientes de buttonsValues como los de extras coinciden o son nulos/vacíos, no eliminar la orden
-          if (buttonsMatch && extrasMatch) {
-            return false;
-          }
-
+          if (buttonsMatch && extrasMatch) return false;
           // Si no coinciden los ingredientes de buttonsValues o extras, eliminar la orden
-          return true;
+          else return true;
         }
       });
       return deletedOrder;

@@ -121,13 +121,16 @@ function App() {
               />
             </div>
 
-            <Badge
-              content={cartOrders.length > 0 ? cartOrders.length : false}
-              isInvisible={cartOrders.length === 0}
-              color='danger'
-            >
-              <img src={Cart} alt='Cart logo' onClick={() => onOpen()} className='w-6 sm:w-9' />
-            </Badge>
+            <div className='flex transform hover:scale-125 transition duration-1000 active:scale-100'>
+              <Badge
+                className='cursor-pointer'
+                content={cartOrders.length > 0 ? cartOrders.length : false}
+                isInvisible={cartOrders.length === 0}
+                color='danger'
+              >
+                <img src={Cart} alt='Cart logo' onClick={() => onOpen()} className='w-6 sm:w-9 cursor-pointer' />
+              </Badge>
+            </div>
 
             <Modal
               backdrop='blur'
@@ -138,12 +141,10 @@ function App() {
               size='3xl'
               shadow='sm'
               classNames={{
-                backdrop: 'bg-[#292f47]/50 backdrop-opacity-40',
-                base: ' border-[#292f46] bg-[#19172c] dark:bg-[#19172c] text-[#a8b0d3] ',
-                header: 'border-b-[1px] border-[#292f46]',
-                footer: 'border-t-[1px] border-[#292f46]',
-                closeButton: 'hover:bg-white/5 active:bg-white/10',
                 wrapper: 'overflow-hidden',
+                backdrop: 'bg-[#292f47]/50 backdrop-opacity-40',
+                header: 'border-b-2 border-gray-300',
+                footer: 'border-t-2 border-gray-300',
               }}
             >
               <ModalContent>
@@ -151,52 +152,55 @@ function App() {
                   <>
                     <ModalHeader className='flex flex-col gap-1'>
                       <div className='flex justify-between items-center'>
-                        <h2>Carrito</h2>
+                        <h1 className='text-2xl'>Carrito</h1>
                       </div>
                     </ModalHeader>
                     <ModalBody>
-                      <div className={css.orderList}>
+                      <div className='flex flex-col h-[1000rem] gap-6 py-2 pl-3 pr-2 w-full overflow-y-scroll'>
                         {cartOrders?.length === 0 ? (
-                          <span className='w-full h-64 flex justify-center items-center text-4xl'>
+                          <span className='w-full h-full flex justify-center items-center text-4xl'>
                             Sin pedidos... ¡Ordena Ya!
                           </span>
                         ) : (
-                          cartOrders.map(({ id, name, quanty, price, buttonsValues, extras, typeOfProduct }, index) => (
-                            <CartMenu
-                              key={`${id}-${name}-${index}`}
-                              id={id}
-                              name={name}
-                              quanty={quanty}
-                              price={price}
-                              typeOfProduct={typeOfProduct}
-                              buttonsValues={buttonsValues}
-                              extras={extras}
-                            >
-                              {typeOfProduct === 'Custom' && <h1 className='mb-2'>Sin:</h1>}
+                          cartOrders.map(
+                            ({ id, name, quanty, price, buttonsValues, extras, typeOfProduct, img }, index) => (
+                              <CartMenu
+                                key={`${id}-${name}-${index}`}
+                                id={id}
+                                name={name}
+                                quanty={quanty}
+                                price={price}
+                                typeOfProduct={typeOfProduct}
+                                buttonsValues={buttonsValues}
+                                extras={extras}
+                                img={img}
+                              >
+                                {typeOfProduct === 'Custom' && <h1 className='mb-2'>Sin:</h1>}
 
-                              {buttonsValues &&
-                                Object.values(buttonsValues).map(({ title, ingredient }) => {
-                                  return (
-                                    <div key={ingredient}>
-                                      {typeOfProduct === 'Coffee' && title} {ingredient}
-                                    </div>
-                                  );
-                                })}
-
-                              {extras && extras.length > 0 && (
-                                <>
-                                  <h1 className='my-2'>Extra de:</h1>
-                                  {Object.values(extras)?.map(({ ingredient, price }) => {
+                                {buttonsValues &&
+                                  Object.values(buttonsValues).map(({ title, ingredient }) => {
                                     return (
                                       <div key={ingredient}>
-                                        - {ingredient} (+${price})
+                                        {typeOfProduct === 'Coffee' && title} {ingredient}
                                       </div>
                                     );
                                   })}
-                                </>
-                              )}
-                            </CartMenu>
-                          ))
+
+                                {extras && extras.length > 0 && (
+                                  <>
+                                    <h1 className='my-2'>Extra de:</h1>
+                                    {Object.values(extras)?.map(({ ingredient, price }) => {
+                                      return (
+                                        <div key={ingredient}>
+                                          - {ingredient} (+${price})
+                                        </div>
+                                      );
+                                    })}
+                                  </>
+                                )}
+                              </CartMenu>
+                            )
+                          )
                         )}
                       </div>
                     </ModalBody>
@@ -210,14 +214,9 @@ function App() {
                             <div className='px-10'>Ver Menu ...</div>
                           </Button>
                         ) : (
-                          <>
-                            <Button className='w-full' color='primary' variant='light' onClick={onClose}>
-                              Ver Menu ...
-                            </Button>
-                            <Button className='w-full' color='success' variant='ghost' onClick={onGoToCart}>
-                              <div className='px-10'>Ir al Carrito de Compras</div>
-                            </Button>
-                          </>
+                          <Button className='w-full' color='success' variant='ghost' onClick={onGoToCart}>
+                            <div className='px-10'>Ir al Carrito de Compras</div>
+                          </Button>
                         )}
                       </div>
                     </ModalFooter>
@@ -228,7 +227,7 @@ function App() {
           </div>
         </section>
 
-        <section className='overflow-auto h-full bg-gray-100 mx-2 mb-2 mt-1 border-2 border-gray-300 rounded-lg'>
+        <section className='overflow-y-scroll h-full bg-gray-100 mx-2 mb-2 mt-1 border-2 border-gray-300 rounded-lg'>
           <SliderCategories categories={categories} setDisplayedCategory={setDisplayedCategory} />
           <h1 className='m-5 text-2xl'>{displayedCategory === 'Menu' ? 'Menu' : `${displayedCategory} Menu`}</h1>
           <div className='p-5'>
