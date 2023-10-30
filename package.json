@@ -6,7 +6,7 @@
   "scripts": {
     "start-backend": "cd backend && npx pnpm install --hoist && npx prisma migrate deploy --schema src/prisma/schema.prisma && npx prisma db seed && npm run start",
     "start-frontend": "cd frontend && npm install && npm run start",
-    "start": "npx pnpm install && pnpm add babel-runtime jquery webpack --hoist && cd frontend && npm install && npm run start",
+    "start": "npx pnpm install && cd frontend && npm install && npm run start",
     "dev": "concurrently \"cd backend && npm run dev\" \"cd frontend && npm run dev\""
   },
   "keywords": [],
