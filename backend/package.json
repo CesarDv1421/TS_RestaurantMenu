@@ -5,7 +5,7 @@
   "description": "Backend",
   "main": "index.ts",
   "scripts": {
-    "start": "nodemon ./build/index.js",
+    "start": "node ./build/index.js",
     "dev": "ts-node-dev src/index.ts",
     "build": "tsc -p .",
     "migrate": "npx prisma migrate dev --name init --schema src/prisma/schema.prisma"

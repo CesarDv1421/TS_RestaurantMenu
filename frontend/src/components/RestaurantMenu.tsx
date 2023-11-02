@@ -160,8 +160,6 @@ const RestaurantMenu: React.FC<CartOrderTypes> = ({
         };
       });
 
-      console.log(snackbarMessage);
-
       setQuanty(1);
       setToggleButtonsSelected([]);
       setToggleButtonsExtrasSelected([]);

@@ -17,11 +17,13 @@ auth.post(
   [
     body('email')
       .notEmpty()
+      .withMessage('El campo no puede estar vacío')
       .withMessage('Ingrese un email')
       .isEmail()
       .withMessage('El correo electrónico no es válido'),
     body('password')
       .isLength({ min: 8 })
+      .withMessage('La contraseña debe tener mínimo 8 caracteres')
       .isStrongPassword()
       .withMessage('La contraseña debe tener al menos 1 caracter especial, 1 mayúscula y 8 caracteres'),
   ],

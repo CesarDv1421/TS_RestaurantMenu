@@ -1,5 +1,8 @@
 import { useEffect, useState } from 'react';
 
+//NextUI
+import { Button } from '@nextui-org/react';
+
 //React Slick - libreria para crear sliders
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
@@ -24,7 +27,7 @@ const SliderCategories: React.FC<ChildrenProps> = ({ categories, setDisplayedCat
     setSelectedCategory((prevCategory) => (prevCategory === categoria ? 'Menu' : categoria));
 
   const sliderSettings = {
-    className: 'text-center m-10',
+    className: 'text-center m-5',
     dots: false, // Muestra los puntos de navegación
     infinite: true, // Permite el desplazamiento infinito
     speed: 500, // Velocidad de la animación en milisegundos
@@ -37,6 +40,7 @@ const SliderCategories: React.FC<ChildrenProps> = ({ categories, setDisplayedCat
         breakpoint: 1200,
         settings: {
           slidesToShow: 5,
+          className: 'm-5',
         },
       },
       {
@@ -63,29 +67,31 @@ const SliderCategories: React.FC<ChildrenProps> = ({ categories, setDisplayedCat
   return (
     <Slider {...sliderSettings}>
       {categories.length > 0 && (
-        <div>
-          <button
-            className={`px-5 py-2 rounded-2xl border-3 border-green-500 transition-all ${
-              selectedCategory === 'Menu' ? 'bg-gradient-to-r from-green-500 to-green-700 text-white' : 'bg-opacity-20'
+        <div className='px-5 py-2'>
+          <Button
+            className={`transform hover:scale-110 active:scale-100 px-5 py-2 rounded-2xl border-2 border-gray-500 bg-gradient-to-l from-gray-100 to-gray-300 transition-all ${
+              selectedCategory === 'Menu'
+                ? 'bg-gradient-to-r from-green-500 to-green-700 text-white  border-green-600  '
+                : 'bg-opacity-20'
             }`}
             onClick={() => onClickToggle('Menu')}
           >
             Menu
-          </button>
+          </Button>
         </div>
       )}
       {categories?.map(({ id, categoria }) => (
-        <div key={id}>
-          <button
-            className={`px-5 py-2 rounded-2xl border-3 border-green-500 transition-all ${
+        <div key={id} className='px-5 py-2'>
+          <Button
+            className={`transform hover:scale-110 active:scale-100 px-5 py-2 rounded-2xl border-2 border-gray-500 bg-gradient-to-l from-gray-100 to-gray-300 transition-all ${
               selectedCategory === categoria
-                ? 'bg-gradient-to-r from-green-500 to-green-700 text-white'
+                ? 'bg-gradient-to-r from-green-500 to-green-700 text-white border-green-600'
                 : 'bg-opacity-20'
             }`}
             onClick={() => onClickToggle(categoria)}
           >
             {categoria}
-          </button>
+          </Button>
         </div>
       ))}
     </Slider>

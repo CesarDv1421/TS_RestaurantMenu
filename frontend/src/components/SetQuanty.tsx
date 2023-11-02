@@ -18,7 +18,7 @@ const SetQuanty = ({
     <div className={css.quantyOfOrder}>
       <div
         onClick={() => substractQuanty()}
-        className={`transform transition hover:scale-125 active:scale-100 ${quanty === 1 && `bg-red-600`}`}
+        className={`transform transition hover:scale-125 active:scale-100 ${quanty === 1 && `bg-red-600 `}`}
       >
         <img src={Minus} width='8px' alt='Operador substraccion' />
       </div>

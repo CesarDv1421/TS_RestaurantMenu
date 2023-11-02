@@ -16,12 +16,6 @@ interface ChildrenProps {
   img: string;
 }
 
-interface CartOrdersReturnType {
-  onDeleteCartOrder: () => void;
-  newQuanty: number;
-  setNewQuanty: React.Dispatch<React.SetStateAction<number>>;
-}
-
 //Custom Hooks
 import useCartOrders from '../hooks/useCartOrders';
 
@@ -38,15 +32,10 @@ const CartMenu: React.FC<ChildrenProps> = ({
   buttonsValues,
   extras,
 }) => {
-  const { newQuanty, setNewQuanty } = useCartOrders(
-    id,
-    quanty,
-    buttonsValues || [],
-    extras || []
-  ) as CartOrdersReturnType;
+  const { newQuanty, setNewQuanty } = useCartOrders(id, quanty, buttonsValues || [], extras || []);
 
   return (
-    <div className='flex rounded-xl z-0 border-red shadow-custom'>
+    <div className='flex rounded-xl bg-gray-100 border-red shadow-custom'>
       <div className='w-24'>
         <img src='http://localhost:3000/img/restaurantImg/coffee.jpg' className='rounded-tl-lg rounded-bl-lg' />
       </div>

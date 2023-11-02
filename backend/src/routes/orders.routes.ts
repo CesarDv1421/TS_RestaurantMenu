@@ -16,7 +16,7 @@ interface CustomRequest extends Request {
 orders.post('/', async (req: CustomRequest, res) => {
   try {
     const orders = req.body as ordersInComing[];
-    const userId = req.user?.userId;
+    const userId = req.user?.id;
 
     if (!userId) return res.status(401).json({ err: 'Autenticacion fallida, usuario no encontrado' });
 

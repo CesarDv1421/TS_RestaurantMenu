@@ -5,7 +5,7 @@ import SnackbarMUI from '../components/SnackbarMUI.js';
 import useAuth from '../hooks/useAuth.js';
 
 //NextUI
-import { Card, CardBody, Divider, Button, Input, Tabs, Tab } from '@nextui-org/react';
+import { Card, CardBody, Divider, Button, Input, Tabs, Tab, Link } from '@nextui-org/react';
 import { EyeSlashFilledIcon, EyeFilledIcon } from '../components/Icons';
 
 const Auth = () => {
@@ -29,7 +29,7 @@ const Auth = () => {
   return (
     <section>
       <form className='h-screen flex justify-center items-center'>
-        <Card className='w-[30%]'>
+        <Card className='w-[30%]' classNames={{ base: 'border-2 border-gray-300' }}>
           <Tabs
             fullWidth
             size='lg'
@@ -37,18 +37,19 @@ const Auth = () => {
             className='px-10 pt-5  flex justify-center'
             selectedKey={typeOfAuth}
             classNames={{
-              tabList: 'flex justify-start items-start border border-red-500',
+              tabList: 'flex justify-start items-start',
             }}
-            onSelectionChange={() => setTypeOfAuth}
+            onSelectionChange={setTypeOfAuth as any}
           >
             <Tab key='Signin' title='Iniciar Sesion'>
               <Divider />
               <CardBody className='overflow-hidden'>
-                <div className='w-full h-60 flex gap-5 flex-col justify-evenly'>
+                <div className='w-full h-72 py-10 flex gap-5 flex-col'>
                   <Input
                     type='email'
                     variant='bordered'
                     label='Email'
+                    className='h-full flex justify-center'
                     validationState={errMessage?.type === 'Email' ? 'invalid' : 'valid'}
                     errorMessage={errMessage?.type === 'Email' && errMessage?.message}
                     value={email}
@@ -58,6 +59,7 @@ const Auth = () => {
                     type={isPasswordVisible ? 'text' : 'password'}
                     variant='bordered'
                     label='Contraseña'
+                    className='h-full flex justify-center'
                     validationState={errMessage?.type === 'Password' ? 'invalid' : 'valid'}
                     errorMessage={errMessage?.type === 'Password' && errMessage?.message}
                     value={password}
@@ -75,7 +77,15 @@ const Auth = () => {
                 </div>
               </CardBody>
               <Divider />
-              <div className='flex m-3 gap-5 justify-end'>
+              <div className='m-3 gap-5 justify-end'>
+                <span className='flex justify-center mb-2 mt-1'>
+                  <h2>
+                    ¿No tienes cuenta?{' '}
+                    <Link className='cursor-pointer' onClick={() => setTypeOfAuth('SignUp')}>
+                      Regístrate
+                    </Link>
+                  </h2>
+                </span>
                 <Button className='w-full' color='success' variant='ghost' type='submit' onClick={onSignIn}>
                   Iniciar Sesion
                 </Button>
@@ -85,11 +95,12 @@ const Auth = () => {
             <Tab key='SignUp' title='Registrarse'>
               <Divider />
               <CardBody>
-                <div className='w-full h-60 flex gap-5 flex-col justify-evenly'>
+                <div className='w-full h-72 flex gap-5 flex-col'>
                   <Input
                     type='text'
                     variant='bordered'
                     label='Nombre'
+                    className='h-full flex justify-center'
                     validationState={errMessage?.type === 'Name' ? 'invalid' : 'valid'}
                     errorMessage={errMessage?.type === 'Name' && errMessage?.message}
                     value={name}
@@ -99,6 +110,7 @@ const Auth = () => {
                     type='email'
                     variant='bordered'
                     label='Email'
+                    className='h-full flex justify-center'
                     validationState={errMessage?.type === 'Email' ? 'invalid' : 'valid'}
                     errorMessage={errMessage?.type === 'Email' && errMessage?.message}
                     value={email}
@@ -108,6 +120,7 @@ const Auth = () => {
                     type={isPasswordVisible ? 'text' : 'password'}
                     variant='bordered'
                     label='Contraseña'
+                    className='h-full flex justify-center'
                     validationState={errMessage?.type === 'Password' ? 'invalid' : 'valid'}
                     errorMessage={errMessage?.type === 'Password' && errMessage?.message}
                     value={password}
@@ -125,7 +138,15 @@ const Auth = () => {
                 </div>
               </CardBody>
               <Divider />
-              <div className='flex m-3 gap-5 justify-end'>
+              <div className='m-3 gap-5 justify-end'>
+                <span className='flex justify-center mb-2 mt-1'>
+                  <h2>
+                    ¿Ya estás Registrado?{' '}
+                    <Link className='cursor-pointer' onClick={() => setTypeOfAuth('Signin')}>
+                      Inicia Sesión
+                    </Link>
+                  </h2>
+                </span>
                 <Button
                   className='w-full hover:text-white'
                   color='success'

@@ -37,13 +37,13 @@ const Navbar = () => {
   ];
 
   return (
-    <header className='hidden sm:flex'>
+    <header className='hidden sm:flex select-none'>
       <nav className='border-r-2 border-gray-300'>
         <ul className={css.ulContainer}>
           {listNavbar.map(({ title, img, click, url }) => {
             return (
-              <li key={title} onClick={click ? () => click() : undefined}>
-                <Link to={`${url ? url : '/auth'}`} className='flex flex-col items-center'>
+              <li key={title} onClick={click ? () => click() : undefined} className='transform transition hover:scale-125 active:scale-100'>
+                <Link to={`${url ? url : '/menu'}`} className='flex flex-col items-center'>
                   <img src={img} className={title === null ? 'w-12' : 'w-6'} alt='React logo' width='25px' />
                   {title}
                 </Link>

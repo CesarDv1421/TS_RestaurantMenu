@@ -1,5 +1,5 @@
 //Interfaces
-import { CartOrdersContextType, useCartOrdersReturnType, TogglesValues, ExtraItem } from '../interfaces/CartOrder';
+import { useCartOrdersReturnType, TogglesValues, ExtraItem } from '../interfaces/CartOrder';
 
 // Componentes
 import SetQuanty from './SetQuanty';
@@ -12,7 +12,6 @@ interface QuantyEditorType {
   quanty: number;
   buttonsValues: TogglesValues[];
   extras: ExtraItem[];
-  setCartOrdersList: CartOrdersContextType['setCartOrders'];
 }
 
 const QuantyEditor: React.FC<QuantyEditorType> = ({ id, quanty, buttonsValues, extras }) => {

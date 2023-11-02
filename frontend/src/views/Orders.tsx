@@ -65,6 +65,15 @@ const Orders = () => {
       <div className='w-full flex flex-col'>
         <h1 className='text-2xl m-5'>Órdenes</h1>
         <div className='flex flex-col h-full overflow-auto mx-2 mb-2 p-3 border-2 bg-gray-100 border-gray-300 rounded-lg'>
+          <div className='px-5 pt-2 pb-4 flex'>
+            <span className='px-7'>ID</span>
+            <div className='flex w-full border-red-500'>
+              <span className='w-full text-center'>Status</span>
+              <span className='w-full text-center'>Total</span>
+              <span className='w-full text-center'>Fecha de creación</span>
+              <span className='w-full text-center'>Creada hace ...</span>
+            </div>
+          </div>
           {numberOfOrders.length > 0 ? (
             <>
               <Accordion

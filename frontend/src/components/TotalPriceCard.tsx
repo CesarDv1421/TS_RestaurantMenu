@@ -1,5 +1,8 @@
 import { useEffect, useContext } from 'react';
 
+//Icons
+import copy from '/img/icons/copy.png';
+
 //Componentes
 import InputPassword from './InputPassword.tsx';
 
@@ -12,8 +15,12 @@ import { CartOrdersContext } from '../context/CartOrdersContext.tsx';
 //Custom Hooks
 import useTotalPriceCard from '../hooks/useTotalPriceCard.tsx';
 
+//Helpers
+import copyToClipboard from '../helpers/copyToClipboard.ts';
+import formatNumberWithPoints from '../helpers/formatNumberPoints.ts';
+
 //Next UI
-import { Link, Button } from '@nextui-org/react';
+import { Link, Button, Tooltip } from '@nextui-org/react';
 import { Modal, ModalContent, ModalHeader, ModalBody } from '@nextui-org/modal';
 import { Tabs, Tab, Input, Spinner } from '@nextui-org/react';
 
@@ -71,21 +78,28 @@ const TotalPriceCard = ({ children }: { children: number }) => {
         <div className='flex justify-between mx-5'>
           <span className='text-2xl'>Total:</span>
           <span className='text-2xl'>
-            Bs {totalInBs} / ${total}
+            Bs {formatNumberWithPoints(Number(totalInBs))} / ${total}
           </span>
         </div>
       </div>
 
       <div className='flex mx-5 gap-5 justify-evenly py-5'>
-        <Button className='w-1/4' href='/menu' as={Link} color='secondary' showAnchorIcon variant='solid'>
+        <Button
+          className='transform hover:scale-110 w-1/4'
+          href='/menu'
+          as={Link}
+          color='secondary'
+          showAnchorIcon
+          variant='solid'
+        >
           Regresar al Menu
         </Button>
         <Button
           onPress={onOpen}
-          className='w-1/4'
+          className='transform hover:scale-110 w-1/4'
           color='success'
           isDisabled={cartOrders.length === 0 ? true : false}
-          variant='ghost'
+          variant='shadow'
         >
           Pagar
         </Button>
@@ -114,7 +128,7 @@ const TotalPriceCard = ({ children }: { children: number }) => {
                 aria-label='Tabs form'
                 id='Tabs'
                 selectedKey={selected}
-                onSelectionChange={() => setSelected}
+                onSelectionChange={setSelected as any}
                 classNames={{
                   tabList: 'flex justify-evenly gap-6 w-full relative',
                   cursor: 'w-full bg-[#2ecc71]',
@@ -126,20 +140,59 @@ const TotalPriceCard = ({ children }: { children: number }) => {
                 <Tab key='binance' title='Binance Pay'>
                   <form className='flex flex-col gap-4' onSubmit={onSubmit}>
                     <h1 className='text-2xl'>Datos:</h1>
-                    <div className='flex justify-between py-5 bg-gray-100 border-2 border-gray-200 rounded-xl'>
-                      <div className='w-full text-center'>
-                        <h2>Correo:</h2>
-                        <span>cesardv1321@gmail.com</span>
+                    <div className='flex py-5 bg-gray-100 border-2 border-gray-200 rounded-xl'>
+                      <div className='w-full text-center flex flex-col items-center'>
+                        <h2>Correo: </h2>
+                        <span>cesardv1321@gmail.com </span>
+                        <Tooltip
+                          placement='bottom'
+                          content='Copiar Correo'
+                          color='success'
+                          className='text-white'
+                          showArrow={true}
+                        >
+                          <img
+                            src={copy}
+                            className='w-6 mt-2 cursor-pointer transition transform hover:scale-125 active:scale-100'
+                            onClick={() => copyToClipboard('cesardv1321@gmail.com')}
+                          />
+                        </Tooltip>
                       </div>
                       <div className='border border-gray-200' />
-                      <div className='w-full text-center'>
+                      <div className='w-full text-center flex flex-col items-center'>
                         <h2>Número de Celular:</h2>
-                        <span>0412 913 0178</span>
+                        <span>+58 412 913 0178</span>
+                        <Tooltip
+                          placement='bottom'
+                          content='Copiar Número'
+                          color='success'
+                          className='text-white'
+                          showArrow={true}
+                        >
+                          <img
+                            src={copy}
+                            className='w-6 mt-2 cursor-pointer transition transform hover:scale-125 active:scale-100'
+                            onClick={() => copyToClipboard('+584129130178')}
+                          />
+                        </Tooltip>
                       </div>
                       <div className='border border-gray-200' />
-                      <div className='w-full text-center'>
+                      <div className='w-full text-center flex flex-col items-center'>
                         <h2>ID Pay:</h2>
                         <span>410932355</span>
+                        <Tooltip
+                          placement='bottom'
+                          content='Copiar ID Pay'
+                          color='success'
+                          className='text-white'
+                          showArrow={true}
+                        >
+                          <img
+                            src={copy}
+                            className='w-6 mt-2 cursor-pointer transition transform hover:scale-125 active:scale-100'
+                            onClick={() => copyToClipboard('410932355')}
+                          />
+                        </Tooltip>
                       </div>
                     </div>
 
@@ -221,22 +274,52 @@ const TotalPriceCard = ({ children }: { children: number }) => {
                     <div className='flex flex-col justify-center gap-5 w-ful border-2 border-gray-200 bg-gray-100 p-5 rounded-xl'>
                       <div className='flex justify-between'>
                         <h1>Banco:</h1>
-                        <h2>Venezuela / Banesco</h2>
+                        <h2>Venezuela (0102) / Banesco (0134)</h2>
                       </div>
                       <div className='border border-gray-200' />
                       <div className='flex justify-between'>
                         <h1>Cédula:</h1>
-                        <h2>28.588.786</h2>
+                        <div className='flex justify-center items-center'>
+                          <Tooltip
+                            placement='left'
+                            content='Copiar Cédula'
+                            color='success'
+                            className='text-white'
+                            showArrow={true}
+                          >
+                            <img
+                              src={copy}
+                              className='w-6 mx-2 cursor-pointer transition transform hover:scale-125 active:scale-100'
+                              onClick={() => copyToClipboard('28588786')}
+                            />
+                          </Tooltip>
+                          <h2>28.588.786</h2>
+                        </div>
                       </div>
                       <div className='border border-gray-200' />
                       <div className='flex justify-between'>
                         <h1>Número de Celular:</h1>
-                        <h2>0412 913 0178</h2>
+                        <div className='flex justify-center items-center'>
+                          <Tooltip
+                            placement='left'
+                            content='Copiar Número'
+                            color='success'
+                            className='text-white'
+                            showArrow={true}
+                          >
+                            <img
+                              src={copy}
+                              className='w-6 mx-2 cursor-pointer transition transform hover:scale-125 active:scale-100'
+                              onClick={() => copyToClipboard('04129130178')}
+                            />
+                          </Tooltip>
+                          <h2>0412 913 0178</h2>
+                        </div>
                       </div>
                     </div>
 
                     <h2 className='my-5 bg-gray-200 border-2 border-gray-300 text-2xl text-center rounded-xl p-5'>
-                      Monto a pagar: {totalInBs}Bs
+                      Monto a pagar: {formatNumberWithPoints(Number(totalInBs))}Bs
                     </h2>
 
                     <div className='flex flex-col gap-5'>

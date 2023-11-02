@@ -109,10 +109,10 @@ function App() {
             <img src={Menu} alt='Menu Icon' className='w-5  sm:hidden' />
 
             <div className='w-1/2'>
-              {/* <input type='text' placeholder='Buscar categoria o menu' /> */}
               <Input
-                className='border-2 border-gray-300 rounded-lg'
+                className='border-2 border-gray-300 rounded-2xl'
                 size='sm'
+                radius='lg'
                 type='text'
                 label='Buscar plato del menu'
                 value={inputValue}
@@ -141,6 +141,7 @@ function App() {
               size='3xl'
               shadow='sm'
               classNames={{
+                body: 'bg-gray-200',
                 wrapper: 'overflow-hidden',
                 backdrop: 'bg-[#292f47]/50 backdrop-opacity-40',
                 header: 'border-b-2 border-gray-300',
@@ -214,7 +215,12 @@ function App() {
                             <div className='px-10'>Ver Menu ...</div>
                           </Button>
                         ) : (
-                          <Button className='w-full' color='success' variant='ghost' onClick={onGoToCart}>
+                          <Button
+                            className='w-full transform transition hover:scale-110'
+                            color='success'
+                            variant='ghost'
+                            onClick={onGoToCart}
+                          >
                             <div className='px-10'>Ir al Carrito de Compras</div>
                           </Button>
                         )}

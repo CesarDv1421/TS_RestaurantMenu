@@ -46,8 +46,7 @@ const Cart = () => {
       <div className='w-full h-screen flex flex-col justify-between'>
         <Table
           aria-label='CartOrders'
-          classNames={{ wrapper: ['overflow-y-scroll'] }}
-          className={`w-full p-5 ${cartOrders.length === 0 && 'h-60'}`}
+          className={`w-full h-full overflow-auto p-5 ${cartOrders.length === 0 && 'h-1/4'}`}
         >
           <TableHeader>
             <TableColumn>Nombre</TableColumn>
@@ -58,8 +57,9 @@ const Cart = () => {
             <TableColumn className='text-center'>Acciones</TableColumn>
           </TableHeader>
           <TableBody>
-            {cartOrders &&
-              cartOrders.map(({ id, name, price = 0, quanty, buttonsValues = [], extras = [], typeOfProduct }) => (
+            {cartOrders.map(({ id, name, price = 0, quanty, buttonsValues = [], extras = [], typeOfProduct }) => {
+              console.log(quanty);
+              return (
                 <TableRow
                   key={`${id}-${name}-${price}-${buttonsValues[0]?.ingredient}-${buttonsValues[1]?.ingredient}-${buttonsValues[2]?.ingredient}-${buttonsValues[3]?.ingredient}`}
                 >
@@ -100,13 +100,7 @@ const Cart = () => {
                   </TableCell>
                   <TableCell>
                     <div className='flex items-center justify-center'>
-                      <QuantyEditor
-                        id={id}
-                        quanty={quanty}
-                        buttonsValues={buttonsValues}
-                        extras={extras}
-                        setCartOrdersList={setCartOrders}
-                      />
+                      <QuantyEditor id={id} quanty={quanty} buttonsValues={buttonsValues} extras={extras} />
                     </div>
                   </TableCell>
                   <TableCell>
@@ -121,7 +115,8 @@ const Cart = () => {
                     <DeleteCartOrderButton id={id} quanty={quanty} buttonsValues={buttonsValues} extras={extras} />
                   </TableCell>
                 </TableRow>
-              ))}
+              );
+            })}
           </TableBody>
         </Table>
         {cartOrders.length === 0 && (

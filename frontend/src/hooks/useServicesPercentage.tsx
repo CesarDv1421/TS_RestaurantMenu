@@ -1,3 +1,6 @@
+//Helpers
+import formatNumberWithPoints from '../helpers/formatNumberPoints';
+
 export interface ServicesPercentageResult {
   ivaPercentage: number;
   servicePercentage: number;
@@ -5,7 +8,7 @@ export interface ServicesPercentageResult {
   iva: number;
   total: number;
   subtotal: number;
-  totalInBs: number;
+  totalInBs: string;
 }
 
 function useServicesPercentage(price: number): ServicesPercentageResult {
@@ -19,7 +22,7 @@ function useServicesPercentage(price: number): ServicesPercentageResult {
   const subtotal = price;
 
   const total = Number((subtotal + servicio + iva).toFixed(2));
-  const totalInBs = Number((total * 34).toFixed(2));
+  const totalInBs = formatNumberWithPoints(Number((total * 34).toFixed(2)));
 
   return {
     ivaPercentage: IVA_PERCENTAGE,
