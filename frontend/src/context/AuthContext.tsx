@@ -1,40 +1,54 @@
-import { createContext, useState } from 'react';
+import { createContext, useContext, ReactNode } from 'react';
 
-//Interfaces
+// Interfaces
 import { ContextValue, userInfo } from '../interfaces/AuthContext';
-import { ChildrenProps } from '../interfaces/ChildrenProps';
 
+// Crea el contexto de autenticación
 const AuthContext = createContext<ContextValue | null>(null);
 
-const AuthProvider: React.FC<ChildrenProps> = ({ children }) => {
+// Proveedor de autenticación utilizando localStorage
+const AuthProvider = ({ children }: { children: ReactNode }) => {
+  let userToken: string | null = null;
+  let userInfo: userInfo | null = null;
+
   try {
     const storedToken = localStorage.getItem('token');
     const storedUserInfo = localStorage.getItem('userInfo');
+    const parsedUserInfo = storedUserInfo ? JSON.parse(storedUserInfo) : null;
 
-    const [userToken, setUserToken] = useState<string | null>(storedToken);
-    const [userInfo, setUserInfo] = useState<userInfo | null>(storedUserInfo ? JSON.parse(storedUserInfo) : null);
-
-    const login = (token: string, userInfo: userInfo) => {
-      if (token && userInfo) {
-        setUserToken(token);
-        setUserInfo(userInfo);
-        localStorage.setItem('token', token);
-        localStorage.setItem('userInfo', JSON.stringify(userInfo));
-      }
-    };
-
-    const logout = () => {
-      setUserToken(null);
-      setUserInfo(null);
-      localStorage.removeItem('token');
-      localStorage.removeItem('userInfo');
-    };
-
-    return <AuthContext.Provider value={{ userToken, userInfo, login, logout }}>{children}</AuthContext.Provider>;
+    userToken = storedToken;
+    userInfo = parsedUserInfo;
   } catch (err) {
-    console.log('Error al analizar el JSON:', err);
-    localStorage.removeItem('userInfo');
+    console.log(err);
   }
+
+  const login = (token: string, userInfo: userInfo) => {
+    userToken = token;
+    userInfo = userInfo;
+    localStorage.setItem('token', token);
+    localStorage.setItem('userInfo', JSON.stringify(userInfo));
+  };
+
+  const logout = () => {
+    userToken = null;
+    userInfo = null;
+    localStorage.removeItem('token');
+    localStorage.removeItem('userInfo');
+  };
+
+  if (userToken === null || userInfo === null) {
+    // Puedes mostrar un mensaje de error o redirigir al usuario en caso de un error de autenticación
+    return <div>Error de autenticación</div>;
+  }
+
+  return <AuthContext.Provider value={{ userToken, userInfo, login, logout }}>{children}</AuthContext.Provider>;
 };
 
-export { AuthContext, AuthProvider };
+// Función personalizada para utilizar el contexto de autenticación
+const useAuth = (): ContextValue => {
+  const context = useContext(AuthContext);
+  if (!context) throw new Error('useAuth debe ser utilizado dentro de un AuthProvider');
+  return context;
+};
+
+export { AuthProvider, useAuth, AuthContext };
