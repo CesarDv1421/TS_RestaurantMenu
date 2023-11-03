@@ -25,11 +25,13 @@ const prisma = new client_1.PrismaClient();
 auth.post('/signin', [
     (0, express_validator_1.body)('email')
         .notEmpty()
+        .withMessage('El campo no puede estar vacío')
         .withMessage('Ingrese un email')
         .isEmail()
         .withMessage('El correo electrónico no es válido'),
     (0, express_validator_1.body)('password')
         .isLength({ min: 8 })
+        .withMessage('La contraseña debe tener mínimo 8 caracteres')
         .isStrongPassword()
         .withMessage('La contraseña debe tener al menos 1 caracter especial, 1 mayúscula y 8 caracteres'),
 ], (req, res) => __awaiter(void 0, void 0, void 0, function* () {

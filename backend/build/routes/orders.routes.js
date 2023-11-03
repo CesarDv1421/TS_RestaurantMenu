@@ -18,7 +18,7 @@ orders.post('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     try {
         const orders = req.body;
-        const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.userId;
+        const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.id;
         if (!userId)
             return res.status(401).json({ err: 'Autenticacion fallida, usuario no encontrado' });
         const idOrder = yield prisma.ordenes.create({
